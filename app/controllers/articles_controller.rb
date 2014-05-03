@@ -2,7 +2,7 @@ class ArticlesController < ApplicationController #Un controlador es una simple c
 #Dentro de esta clase se definen metodos que se convertiran en acciones de este controlador
 
 #Estas acciones actuaran como operaciones CRUD para el resource article
-layout "capa"
+
   def new #esta accion esta asociada a crear un nuevo article, su vista es el formulario para recolectar esta información y ser 
   	#dirigida a la acción create que se encuentra abajo
   	#render nothing: true, status: 404 #cuando comento esta instruccion Rails va a renderizar por defecto esta accion a través de su templates, sin embargo, si coloco esta instruccióm
@@ -18,8 +18,9 @@ layout "capa"
     #logger.debug "HELLO I AM A DEBUGGING STATEMENT"
     #logger.debug "#{params[:article].inspect}"
     #render text: params[:article].inspect
-    render plain: "<b>ESTO ES UNA PRUEBA</b>", layout: true, status: 200
+    #render plain: "<b>ESTO ES UNA PRUEBA</b>", layout: true, status: 200, content_type: "text/html"
     #render body: params[:article].inspect
+    render text: params[:article].to_yaml, layout:true
   end
 
 
