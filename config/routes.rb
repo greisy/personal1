@@ -1,6 +1,6 @@
 Blog::Application.routes.draw do
  # get "welcome/index"
-  resources :articles
+  resources :articles #creando routes para las acciones estandar de RESTful como se puede ver en $rake routes
 
   root 'welcome#index'
   # The priority is based upon order of creation: first created -> highest priority.
