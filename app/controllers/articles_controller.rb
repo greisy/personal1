@@ -9,7 +9,13 @@ class ArticlesController < ApplicationController #Un controlador es una simple c
   	                       #le dará mayor prioridad a está instrucción para renderizarla (render nothing) 
     #render nothing: true, status: :accepted
   end
-
+  def show
+     #en esta instruccion estoy guardando en la variable de instancia el objeto que me devuelve de la busqueda
+     logger.debug "-------------------------------HOLA ESTA ENTRANDO AL SHOW----------------------------------------"
+     @article = Article.find(params[:id]) #<---@article <-- es una variable de instancia Article.find(params[:id])<--- lo que devuelve es un objeto
+     @hola = "hola esto es una prueba"
+  end
+  
   def create 									#es la acción asociada al momento en que se da submit al formulario de arriba y recibira la información para procesarla
   		#lo que la acción CREATE deberia hacer es guardar nuestro nuevo nuevo article en la BD
   	#render plain: params[:article].inspect								#Cuando el formulario es enviado, los campos de este son enviados como parametros y pueden ser referenciados dentro de las 
@@ -25,23 +31,19 @@ class ArticlesController < ApplicationController #Un controlador es una simple c
     @article.save
     logger.debug "----------------------------------------------------"
     logger.debug "#{@article.to_yaml}"
-    redirect_to :show #pasara como parametro en la redireccion al objeto article e ira a la accion show que aun no se porque exactamente va a ir a esa
+    redirect_to @article #pasara como parametro en la redireccion al objeto article e ira a la accion show que aun no se porque exactamente va a ir a esa
     
   end
+  
+  
 
   private #ONLY THE PUBLIC METHODS CAN BE ACTIONS FOR CONTROLLERS
     def article_params
       params.require(:article).permit(:title,:text)
     end
    
-   def show
-     #en esta instruccion estoy guardando en la variable de instancia el objeto que me devuelve de la busqueda
-     #@article = Article.find(params[:id]) #<---@article <-- es una variable de instancia Article.find(params[:id])<--- lo que devuelve es un objeto
-     @hola ="hola"
-     logger.debug "----------------------------------------------------"
-     logger.debug "#{@article.to_yaml}"
-     render json: @article.to_yaml, layout: true
-   end
+
+  
       
 
 end
