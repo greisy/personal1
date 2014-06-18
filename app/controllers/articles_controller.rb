@@ -2,7 +2,9 @@ class ArticlesController < ApplicationController #Un controlador es una simple c
 #Dentro de esta clase se definen metodos que se convertiran en acciones de este controlador
 
 #Estas acciones actuaran como operaciones CRUD para el resource article
-
+  def index
+    @articles = Article.all
+  end
   def new #esta accion esta asociada a crear un nuevo article, su vista es el formulario para recolectar esta información y ser 
   	#dirigida a la acción create que se encuentra abajo
   	#render nothing: true, status: 404 #cuando comento esta instruccion Rails va a renderizar por defecto esta accion a través de su templates, sin embargo, si coloco esta instruccióm
@@ -10,10 +12,8 @@ class ArticlesController < ApplicationController #Un controlador es una simple c
     #render nothing: true, status: :accepted
   end
   def show
-     #en esta instruccion estoy guardando en la variable de instancia el objeto que me devuelve de la busqueda
-     logger.debug "-------------------------------HOLA ESTA ENTRANDO AL SHOW----------------------------------------"
-     @article = Article.find(params[:id]) #<---@article <-- es una variable de instancia Article.find(params[:id])<--- lo que devuelve es un objeto
-     @hola = "hola esto es una prueba"
+    #en esta instruccion estoy guardando en la variable de instancia el objeto que me devuelve de la busqueda
+    @article = Article.find(params[:id]) #<---@article <-- es una variable de instancia Article.find(params[:id])<--- lo que devuelve es un objeto
   end
   
   def create 									#es la acción asociada al momento en que se da submit al formulario de arriba y recibira la información para procesarla
@@ -31,12 +31,11 @@ class ArticlesController < ApplicationController #Un controlador es una simple c
     @article.save
     logger.debug "----------------------------------------------------"
     logger.debug "#{@article.to_yaml}"
+    #POR QUE EL REDIRECT_TO ASOCIA @ARTICLE CON LA ACCION SHOW SI NUNCA SE ESTA COLOCANDO SHOW
     redirect_to @article #pasara como parametro en la redireccion al objeto article e ira a la accion show que aun no se porque exactamente va a ir a esa
     
   end
   
-  
-
   private #ONLY THE PUBLIC METHODS CAN BE ACTIONS FOR CONTROLLERS
     def article_params
       params.require(:article).permit(:title,:text)
