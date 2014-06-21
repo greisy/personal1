@@ -8,4 +8,4 @@
   <%= @article.text %>
 </p>
 
-<%= link_to 'Back', articles_path %> <!-- Si se quiere ir a una accion que esta dentro del mismo controlador no se necesita especificar la opcion 'controller: bla', Rails usara el actual controlador-->
+<%= link_to 'Back', articles_path, class: "enlace" %> <!-- Si se quiere ir a una accion que esta dentro del mismo controlador no se necesita especificar la opcion 'controller: bla', Rails usara el actual controlador-->
