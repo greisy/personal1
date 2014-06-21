@@ -10,6 +10,11 @@ class ArticlesController < ApplicationController #Un controlador es una simple c
   	#render nothing: true, status: 404 #cuando comento esta instruccion Rails va a renderizar por defecto esta accion a través de su templates, sin embargo, si coloco esta instruccióm
   	                       #le dará mayor prioridad a está instrucción para renderizarla (render nothing) 
     #render nothing: true, status: :accepted
+    @article = Article.new #creo la variable de instancia ya que estoy haciendo un render a la accion new entonces no se va a hacer un redirect para hacer el metodo get y obtener algo entonces
+    logger.debug "----------------------------------------------------"
+    logger.debug "#{@article.to_yaml}"
+    #debo crearlo aqui. Para que lo necesito, lo necesito porque se esta cargando el template new y si me fijo este carga el objeto article que fue pasado por parametro para la creacion del objeto, sin embargo como no lo pudo crear
+    #se devuelve al formulario con el objeto que se iba a crear para mostrar los error. 
   end
   def show
     #en esta instruccion estoy guardando en la variable de instancia el objeto que me devuelve de la busqueda
@@ -28,11 +33,11 @@ class ArticlesController < ApplicationController #Un controlador es una simple c
     #render json: params[:article], layout:true
     
     @article = Article.new(article_params) 
-    @article.save
-    logger.debug "----------------------------------------------------"
-    logger.debug "#{@article.to_yaml}"
+    (@article.save) ? (redirect_to @article) : (render 'new')
+    #logger.debug "----------------------------------------------------"
+    #logger.debug "#{@article.to_yaml}"
     #POR QUE EL REDIRECT_TO ASOCIA @ARTICLE CON LA ACCION SHOW SI NUNCA SE ESTA COLOCANDO SHOW
-    redirect_to @article #pasara como parametro en la redireccion al objeto article e ira a la accion show que aun no se porque exactamente va a ir a esa
+    #redirect_to @article #pasara como parametro en la redireccion al objeto article e ira a la accion show que aun no se porque exactamente va a ir a esa
     
   end
   
