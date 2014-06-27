@@ -8,4 +8,20 @@
   <%= @article.text %>
 </p>
 
-<%= link_to 'Back', articles_path, class: "enlace" %> <!-- Si se quiere ir a una accion que esta dentro del mismo controlador no se necesita especificar la opcion 'controller: bla', Rails usara el actual controlador-->
+<h2>Add comment</h2>
+<%= render "comments/form" %> <!-- el @article esta disponible para cualquier partial rendered porque es una variable de instancia -->
+
+<h2>Comments</h2>
+
+<%= render @article.comments %>
+<!--<% @article.comments.each do |comment| %>
+	<strong >Commenter:</strong>
+	<%= comment.commenter %><br>
+	<strong >Comment</strong>
+	<%= comment.body%>
+	<br>
+	<hr width="200" align="left">
+<% end %>-->
+
+<%= link_to 'Back', articles_path, class: "enlace" %> | <!-- Si se quiere ir a una accion que esta dentro del mismo controlador no se necesita especificar la opcion 'controller: bla', Rails usara el actual controlador-->
+<%= link_to 'Edit', edit_article_path(@article), class: "enlace" %>

@@ -11,6 +11,10 @@
 	<tr>
 		<td><%= article.title%></td>
 		<td><%= article.text%></td>	
+		<td><%= link_to 'Show', article_path(article), class: 'enlace' %>
+		<td><%= link_to "Edit", edit_article_path(article), class: 'enlace' %></td>	
+		<td><%= link_to 'Destroy', article_path(article), class: 'enlace', method: :delete, data: {confirm: 'Are you sure?' } %></td>
+		<!-- method y data-confirm son usados como atributos HTML5, cuando el link sea cliqueado Rails mostrará un dialogo de confirmacion y si el usuario acepta sea submiteado la informacion al metodo HTTP: delete, que en el controlador es la accion destroy -->
 	</tr>
 	<% end %>
 

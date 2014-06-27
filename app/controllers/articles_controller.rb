@@ -20,6 +20,17 @@ class ArticlesController < ApplicationController #Un controlador es una simple c
     #en esta instruccion estoy guardando en la variable de instancia el objeto que me devuelve de la busqueda
     @article = Article.find(params[:id]) #<---@article <-- es una variable de instancia Article.find(params[:id])<--- lo que devuelve es un objeto
   end
+ 
+  def edit
+    @article = Article.find(params[:id])
+  end
+  def destroy
+    @article = Article.find(params[:id])
+    @article.destroy
+    
+    redirect_to articles_path  
+  end
+    
   
   def create 									#es la acción asociada al momento en que se da submit al formulario de arriba y recibira la información para procesarla
   		#lo que la acción CREATE deberia hacer es guardar nuestro nuevo nuevo article en la BD

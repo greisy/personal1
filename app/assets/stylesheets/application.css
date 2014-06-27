@@ -12,9 +12,9 @@
  *= require_tree .
  */
 body{
-	background: #156;
+	background: beige;
 	
 }
 .enlace{
-	color: white;	
+	color: black;	
 }
