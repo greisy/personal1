@@ -18,3 +18,8 @@ body{
 .enlace{
 	color: black;	
 }
+
+.field_with_errors{
+	color: white; /*va a cambiar los elementos del campo en este caso cambio el color de las letras*/
+	background: red;
+}
