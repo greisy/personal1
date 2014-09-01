@@ -1,3 +1,13 @@
 // Place all the styles related to the articles controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+table{
+  border: 1px solid red;
+  border-collapse:collapse;
+  margin:2%;
+}
+th,td{
+  border:1px solid yellow;
+  border-collapse:collapse;
+  padding: 10px 10px 10px 10px;
+}

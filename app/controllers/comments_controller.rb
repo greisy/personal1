@@ -1,11 +1,12 @@
 class CommentsController < ApplicationController
-  
+  http_basic_authenticate_with name: "dhh", password: "secret", 
+only: :destroy
   def create
     @article = Article.find(params[:article_id])
     @comment = @article.comments.create(comment_params) #Algunos metodos estan disponibles por la asociacion entre article y comment uno de ellos es el uso del metodo create sobre @article.comments para crear y guardar algun comentario.
     #esto enlazara automaticamente el comentario que pertenece a un articulo en particular.
     logger.debug "----------------------CREATE COMMENT------------"
-    logger.debug "#{params.to_yaml}"
+    logger.debug "#{params[:comment].to_yaml}"
     redirect_to article_path(@article)
   end
   

@@ -1,6 +1,7 @@
 class ArticlesController < ApplicationController #Un controlador es una simple clase que hereda del ApplicationController
 #Dentro de esta clase se definen metodos que se convertiran en acciones de este controlador
-
+  http_basic_authenticate_with name: "dhh", password: "secret",
+except: [:index,:show]
 #Estas acciones actuaran como operaciones CRUD para el resource article
   def index
     @articles = Article.all
