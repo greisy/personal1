@@ -1,0 +1,16 @@
+Hola como estas
+Es greisy esto es una prueba de 
+como trabaja split
+Por favor provemos el
+script en la consola
+Oh si, veamoslo 
+carita feliz si sale
+-----------coloca un string----
+["Hola como estas\n", "Es greisy esto es una prueba de \n", "como trabaja split\n", "Por favor provemos el\n", "script en la consola\n", "Oh si, veamoslo \n", "carita feliz si sale\n"]
+---------------------------
+1
+0
+["Hola como estas\n", "Es greisy esto es una prueba de \n", "como trabaja split\n", "Por favor provemos el\n", "script en la consola\n", "Oh si, veamoslo \n", "carita feliz si sale\n"]
+Kevin Baird | g.grey2411@gmail.com
+se supone que coloca un numero["Hola como estas\n", "Es greisy esto es una prueba de \n", "como trabaja split\n", "Por favor provemos el\n", "script en la consola\n", "Oh si, veamoslo \n", "carita feliz si sale\n"]
+["Hola como estas\n", "Es greisy esto es una prueba de \n", "como trabaja split\n", "Por favor provemos el\n", "script en la consola\n", "Oh si, veamoslo \n", "carita feliz si sale\n"]
