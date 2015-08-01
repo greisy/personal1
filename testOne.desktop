@@ -1,0 +1,21 @@
+Para subir archivos del origen al servidor remoto
+
+1ro. Creo una carpeta
+2do. creo los archivos y los copio en esa carpeta
+3ro. hago 'git init' dentro de esa carpeta
+4to. agrego los archivos en el repositorio 'git add <nombre del archivo>' o 'git add .' agregar esa carpeta
+5to. 'git commit -m "Mensaje"' pARA CONSOLIDAR LA VERSION LOCAL /CREAR LA NUEVA VERSION Cuando hago commit lo estoy guardando localmente en el repositorio
+6to. subir al servidor github.com los archivos o carpetas a las cuales hice commit, 
+COn el siguiente comando me conecto al servidor remoto 'git remote add origin https://github.com/greisy/personal1.git'
+7mo. subir los archivos al repositorio remoto con 'git push -u origin master'
+
+
+
+
+
+
+Para bajar archivos del servidor remoto a la carpeta local
+1ro. Crear carpeta local donde quiero que se bajen mis archivos, hago 'git init'
+2do. git remote add origin https://github.com/greisy/RoR.git
+3ro. git pull baja los archivos y fusiona con los archivos locales, es decir, los actualiza
+4to. Si quiero subir los archivos que he modificado o agregado a la carpeta solo coloco 'git push'
