@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>First Example of Javascript or Jquery</title>
+		<script src="script.js" type="text/javascript"> </script><!--incluir un archivo externo de javascript-->
+	</head>
+	<body>
+		<style>
+			body{
+				background-color: gray;
+
+			}
+			a{
+				color: white;
+				text-align: center;
+				font-weight:bold;
+			}
+		</style>
+		<a href="http://www.google.com" id="foo">
+			Click here!
+		</a>
+
+
+		<script type="text/javascript">  //ejecutar codigo Javascript localizado directamente dentro de HTML
+			var foo = document.getElementById('foo');
+			foo.addEventListener('click', function (e) {
+				this.style.color = 'orange';
+				e.preventDefault();
+
+			});
+			var css = document.getElementById('style');
+			alert(css);
+
+			var title = document.title;
+			alert(title);
+			var decimal = parseInt("00000111",2);
+			alert(decimal);
+		</script>
+	</body>
+</html>

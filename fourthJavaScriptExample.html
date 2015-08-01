@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Fourth JavaScript Example</title>
+		<script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+	</head>
+	<body>
+		<h1>hola mundo</h1>
+		<script type="text/javascript">
+			var myObject = {
+				sayHello : function(){
+					console.log('Hi! My name is'+ this.myName);
+				},
+				myName : 'Rebecca'
+			};
+			var secondObject = {
+				myName : 'Colin' //La variable tiene que tener el mismo nombre que la variable que quiero sustituir si coloco myNamo el no reconocera esta variable porque en realidad dentro de la funcion no existe este nombre
+			};
+			myObject.sayHello();
+			myObject.sayHello.call(secondObject);
+
+
+			var myLastName = "'the global object'",
+				sayHello = function(){
+					console.log('Hi My lastname is '+ this.myLastName);
+				},
+				myObject = {
+					myLastName : 'Guzman'
+				},
+				secondObject = {
+					myLastName : 'Hernandez'
+			};
+			myObject.sayHello = sayHello;
+			secondObject.sayHello = sayHello; 
+			sayHello();
+			secondObject.sayHello();
+			myObject.sayHello = sayHello;
+		</script>
+		<script type="text/javascript">
+			$(document).ready(function() {
+		   	 alert("hello");
+			});
+		</script>
+	</body>
+</html>

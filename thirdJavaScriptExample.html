@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Third Example of JavaScript</title>
+	</head>
+	<body>
+		<script type="text/javascript">
+		var i= 1;
+		var j=i++; //pre-increment
+		console.log('j is equal to '+j+' i is equal to '+i); //concatenation
+		var k=++i; //post-increment
+		console.log('k is equal to '+k+' i is equal to '+i); //concatenation
+		var foo=1;
+		var bar='2';
+		console.log(foo+bar);
+		//forzar a un string a actuar como un numero
+		console.log(foo + Number(bar));
+		console.log(foo + +bar);
+		//comparison Operators 
+		foo =1;
+		bar=0;
+		var baz='1';
+		var bim=2;
+		console.log('returns'+ foo == baz); //la comparacion es entre un entero y un string
+		console.log('returns the same example' + foo === parseInt(baz));
+		
+		//--------------------ARRAY-----------------------
+		var myArray = ['hello', 'world'];
+		//para agregar un elemento en el comienzo del arreglo
+		console.log(myArray.push('new'));
+		myArray=['h','e','l','u','o'];
+		var myString = myArray.join('');//debo colocar como argumento la forma en que quiero que se una el array de lo contrario colocara una coma entre cada elemento // se transforma en un string
+		for (var i = myArray.length - 1; i >= 0; i--) {
+			console.log(myArray[i]);
+		};
+		console.log(myString.split(''));
+		//OBJETO
+		var myObject = {
+			sayHello : function(){
+				console.log("Hello")
+			},
+			myName : 'Rebecca'
+
+		};
+		myObject.sayHello();
+		console.log(myObject.myName);
+		
+		//--------------------USING FUCTIONS------------------
+		var greet = function(person, greeting){
+			var text = greeting + ', ' + person; 
+			console.log(text);
+		};
+		greet('Rebecca', 'Hi my name is');
+		
+		//return value
+		greet = function(person, greeting){
+			var text = greeting + '... ' + person;
+			return text;
+		};
+		console.log(greet('Grey', "I'm a person"));
+		
+		//return another function
+		greet = function(person, greeting){
+			var text = greeting + ' like ' + person;
+			return function(){console.log(text)};
+		};
+		var greeting = greet('Rebecca','I study English');
+		greeting();
+		
+		//function as arguments
+		var myFn = function(fn){
+			var result = fn(); 
+			console.log(result);//no coloco result() porque en realidad result no es una variable que apunta a una funcion anonima, sino es una variable que guarda el resultado del return devuelto por la funcion anonima que se va a pasar como argumento
+		};
+		myFn(function(){ return 'hello world'; });
+
+		myFn = function(fn){
+			var result = fn();
+			console.log(result);
+		};
+		var myOtherFn = function(){
+			return 'This function was passed as an argument';
+		};
+		myFn(myOtherFn());
+		</script>
+	</body>
+</html>fn

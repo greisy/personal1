@@ -1,0 +1,38 @@
+*{
+
+	margin: 0px;
+	padding: 0px;
+	font-family:"Arial";
+}
+
+section#formulario{
+	padding: 100px 10px 20px 30px;
+	background-color: black;
+	text-align: center;
+	margin:20px 100px 0px 100px;
+	height: 500px;
+	color: white;
+}
+
+#formulario{
+
+	margin-top: 30px;
+	margin-left: 550px;
+}
+#formulario div{
+
+	background-color: black;
+	height:40px;
+	width: 300px;
+ 
+
+
+}
+#formulario div label{
+	width: 50px;
+	float:left;
+}
+#formulario div input{
+
+
+}
