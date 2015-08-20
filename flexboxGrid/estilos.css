@@ -1,0 +1,19 @@
+body{
+	background: #E9E9E9;
+}
+
+.contenedor{
+	width:500px;
+	height: 200px;
+	background: #fff;
+	padding:10px;
+	border:10px solid #2C3E50;
+	margin: 20px;
+}
+.elemento{
+	color: #fff;
+	margin:5px;
+	width: 50px;
+	background: #E67E22;
+	text-align: center;
+}
