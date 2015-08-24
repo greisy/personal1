@@ -113,4 +113,72 @@ footer{
 	background:#2c3e50;
 	width: 100%;
 	padding:20px;
+
+	/*Flex-----Padre*/
+	display:flex;
+	flex-wrap:wrap;
+	justify-content:space-between;
+}
+
+footer .links{
+	background-color: #c0392b;
+
+	/*FLEX-.----Padre*/
+	display: flex;
+	flex-wrap:wrap;
+}
+
+footer .links a{
+	flex-grow:1;
+
+	color:#FFF;
+	padding:10px;
+	text-align: center;
+	text-decoration: none;
+}
+footer .links a:hover{
+	background: #e74c3c;
+}
+footer .social{
+	background-color: #e67e22;
+}
+footer .social a {
+	color:#FFF;
+	text-decoration: none;
+	padding:10px;
+	display: inline-block; /*Como el padre no esta utilizando nada de flexbox se coloca inline block para que queden uno al lado del otro*/
+}
+
+/*********************MEDIA QUERYS*/
+
+@media screen and (max-width: 800px){
+	.contenedor{
+		flex-direction:column; /*Cuando el dispositivo llegue a 800px los hijos del contenedor se colocaran uno debajo del otro
+								header se sabe que tiene 100% entonces los elementos que le siguen se colocaban debajo de ésta */
+	}
+	header{
+		flex-direction:column;
+		padding:0;		
+	}
+	header .logo{
+		margin:20px 0;
+	}
+	header nav{
+		width:100%;
+	}
+	aside{
+		flex-direction:row;
+		flex:0; /*este es el padre*/
+	}
+	aside .widget{
+		flex-grow:1; /*este es el hijo*/
+	}
+}
+@media screen and (max-width: 600px){
+	aside{
+		flex-direction:column;
+	}
+	footer{
+		content-justify:space-around;
+	}
 }
