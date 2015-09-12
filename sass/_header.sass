@@ -1,0 +1,46 @@
+header
+	margin-bottom: 1.5em
+	nav 
+		padding: 10px
+
+		a
+			padding: 1em
+			color: #FFF
+			text-decoration: none
+			background: $azul-cielito
+			display: block
+			margin-right: 1em
+			margin-top: 1em
+			+border-radius(5px)
+			&:hover
+				background: #FF851B
+					
+			&:first-child:hover
+				font-weight: bold
+			&:last-child:hover
+				background: $fuchsia
+
+//Cuando quiero usar mixins solo agrego un + delante de la propiedad que en este caso va a ser un mixins
+/*-----Header----*/
+//header
+	margin-bottom: 1.5em
+
+//header nav a
+	padding: 1em
+	color: #FFF
+	text-decoration: none
+	background: $azul-cielito
+	display: block
+	margin-right: 1em
+	margin-top: 1em
+	border-radius: 5px
+
+//header nav a:hover
+	background: #FF851B
+	text-decoration: none
+
+//a:first-child:hover
+	text-decoration: underline
+
+//a:last-child:hover
+	background: $fuchsia
