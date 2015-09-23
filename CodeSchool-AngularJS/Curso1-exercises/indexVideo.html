@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html ng-app="store">
+	<head>
+		<link rel="stylesheet" type="text/css" href="bootstrap.min.css">
+		
+		es necesario agregar los modelos al html principal
+		<script	src="angular.js"></script>
+		<script type="app.js"></script>
+		<script type="products.js"></script>
+	</head>
+	<body >
+		<div ng-controller= "StoreController as store"><!--directive-->
+			<!--<div ng-show="!store.product.soldOut"></div> <!--directive-->
+			<!--<div ng-hide="store.product.soldOut"></div>--> <!--directive-->
+			<div ng-repeat="product in store.products">
+				<!--<h1>{{store.product.name}}</h1>
+				<h2>{{store.product.price | currency}}</h2>
+				<p>{{store.product.description}}</p>
+				<img ng-src="{{product.images[0].full}}">directive
+				<button ng-show= "store.product.canPurchase">Add to Cart</button>directive-->
+				<h1>{{product.name}}</h1>
+				<h2>{{product.price | currency}}</h2>
+				<p>{{product.description}}</p>
+				<img ng-src="{{product.images[0].full}}"><!--directive-->
+				<button ng-show= "product.canPurchase">Add to Cart</button><!--directive-->
+
+			</div>
+		</div>
+		<ul class="list-group">
+			<li class="list-group-item" ng-repeat="product in store.products">
+				<h3 ng-include="'product-title.html'"></h3>
+	
+		<product-panels ng-controller="PanelController as panel">	
+		...
+		</product-panels>
+
+		<!--<section ng-init="tab= 1" ng-controller="PanelController as panel">
+			<!--How do we set an initial value for a tab?
+			<ul class="nav nav-pills" >
+				<!--Set the class to active if current tab is selected
+					enviamos un objeto al valor de la directive
+					active es el nombre de la clase que queremos setear,
+					si el valor (que es una expresion tab === 1) se cumple
+				
+				<li ng-class="{ active:tab === 1}"><a href ng-click="tab= 1"><!--se asigna un valor a tabDescription</a> </li>
+				<li ng-class="{ active:tab === 1}"><a href ng-click="tab= 2">Specifications</a> </li>
+				<li ng-class="{ active:tab === 1}"><a href ng-click="tab= 3">Reviews</a> </li>
+			</ul>
+			{{tab}}
+			
+			<!-- How to make the proper panel show up when some tag a is triggered? with ng-show ="tab===1"
+			<div class="panel" ng-show="tab === 1">
+				<h4>Description</h4>
+				<p>{{product.description}}</p>
+			</div>
+			<div class="panel" ng-show="tab === 2">
+				<h4>Especifications</h4>
+				<blockquote>None yet</blockquote>
+			</div>
+			<div class="panel">
+				<h4>Reviews</h4>
+				<blockquote>None yet</blockquote>
+			</div>
+		</section>-->
+		<!--PANEL CONTROLLER donde se encuentra la logica de como actuaran los elementos del HTML -->
+		<section ng-controller="PanelController as panel">
+			
+			<ul class="nav nav-pills" >
+				<li ng-class="{ active:panel.isSelected(1)}"><a href ng-click="panel.selectTab(1)">Description</a> </li>
+				<li ng-class="{ active:panel.isSelected(2)}"><a href ng-click="panel.selectTab(2)">Specifications</a> </li>
+				<li ng-class="{ active:panel.isSelected(3)}"><a href ng-click="panel.selectTab(3)">Reviews</a> </li>
+			</ul>
+			{{tab}}
+			<div class="panel" ng-show="panel.isSeleted(1)">
+				<h4>Description</h4>
+				<p>{{product.description}}</p>
+			</div>
+			<div class="panel" ng-show="panel.isSelected(2)">
+				<h4>Especifications</h4>
+				<blockquote>None yet</blockquote>
+			</div>
+			<div class="panel" ng-show= "panel.isSeleted(3)">
+				<h4>Reviews</h4>
+				
+				<!--<blockquote ng-repeat="review in product.reviews">-->
+
+				<!--How do we bind this review object to the form-->
+				<!---ng-submit nos permite llamar a la funcion cuando el formato es enviado-->
+				<form name="reviewForm" ng-controller="ReviewController as reviewCtrl" ng-submit="reviewForm.$valid && reviewCtrl.addReview(product)" novalidate> <!--mandamos el producto actual que estamos iterando-->
+					<blockquote>
+						<b>Stars: {{reviewCtrl.review.stars}}</b>
+						{{reviewCtrl.review.body}}
+						<cite>by: {{reviewCtrl.review.author}}</cite>
+					</blockquote>
+					<!--ng-model ata el valor de los elementos del formulario con las propiedades del objeto review para que? para verlas inmediatamente despues de escribir en el formulario-->
+					<select ng-model="reviewCtrl.review.stars" required>
+						<option value="1">1 star</option>
+						<option value="2">2 stars</option>
+					</select>
+					<textarea ng-model="reviewCtrl.review.body" required></textarea>
+					<label>by:</label>
+					<input type="email" ng-model="reviewCtrl.review.author" require>
+					<div>reviewForm is {{reviewForm.$valid}}</div> <!--$ significa que estamos referenciando a una propiedad del form y es una built-in property de angular, por eso no se ha definido-->
+					<input type="submit" value"Submit">
+
+				</form>
+			</div>
+			
+			<!-- How to make the proper panel show up when some tag a is triggered? with ng-show ="tab===1"
+			<div class="panel" ng-show="tab === 1">
+				<h4>Description</h4>
+				<p>{{product.description}}</p>
+			</div>
+			<div class="panel" ng-show="tab === 2">
+				<h4>Especifications</h4>
+				<blockquote>None yet</blockquote>
+			</div>
+			<div class="panel">
+				<h4>Reviews</h4>
+				<blockquote>None yet</blockquote>
+			</div>
+		</section>-->
+
+		<script type="text/javascript" src="angular.min.js"></script>
+		<script type="text/javascript" src="app.js"></script>
+	</body>
+</html>

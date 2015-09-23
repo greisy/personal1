@@ -1,0 +1,64 @@
+*{
+	margin: 0px;
+	padding: 0px;
+	font-family: 'Lato', sans-serif;
+}
+img{
+	max-width:100%; /*el max-width indica que la imagen no se puede pasar del tama;o 
+					que se indica que en este caso es 100% o sea no puede pasar el tama;o del div*/
+}
+.quitar-float{
+	float: none;
+}
+.espacio-arriba{
+	margin-top: 100px;
+
+}
+.pacifico{
+
+	font-family: 'Pacifico', cursive;
+}
+.grande{
+	font-size: 3em; /*es mejor usar em*/
+}
+
+.verde{
+	color:#00887C;
+}
+a,.azul{
+	color: #009FFF;
+}
+.espacio-derecha{
+	margin-right: 1em;
+}
+.no-lista li{
+	list-style-type: none;
+
+}
+.se-gris{
+	background-color: #eee;
+}
+.padding-largo{
+	padding: 5px 10px;
+}
+.inline-block{
+	float: none;
+	display: inline-block;
+	margin-right: -4px;
+}
+.vete-arriba{
+	vertical-align: top;
+}
+.mediano{
+	font-size: 1.5em;
+}
+.retraso-1{
+	-webkit-animatation-delay:1s;
+	-moz-animatation-delay:1s;
+	animation-delay:1s;
+}
+.retraso-2{
+	-webkit-animatation-delay:2s;
+	-moz-animatation-delay:2s;
+	animation-delay:2s;
+}

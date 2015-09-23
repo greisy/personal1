@@ -1,0 +1,65 @@
+<script src="/socket.io/socket.io.js"></script>
+<script>
+	var socket = io.connect('http://localhost:8080');
+	socket.on('messages',function(data){ // el socket escucha o espera por el evento message, cuando en el lado del servidor se emita esta funcion con algun parametro como data, la function data de este lado la recibira en este caso hay que notas que data es un objeto entonces para acceder a su propiedad podemos usar la notacion nod
+		alert(data.hello); 
+	});
+	$('#chat_form').submit(function(e){
+		var message = $('#chat_input').val();
+		socket.emit('messages',message); // emite el evento messages en el servidor
+	});
+</script>
+--------------------------------------------------------------------
+<script src="/socket.io/socket.io.js"></script>
+<script>
+	var socket = io.connect('http://localhost:8080');
+	socket.on('messages',function(data){ // vamos activar el messages listener y cuando llegue una data
+		insertMessage(data);// en este caso lo que hago es utilizar algunos comandos de jquery para renderizar el contenido de data en la vista
+	});
+	$('#chat_form').submit(function(e){
+		var message = $('#chat_input').val();
+		socket.emit('messages',message); // emite el evento messages en el servidor
+	});
+</script>
+----------------------------------------------------------------------
+<script src="/socket.io/socket.io.js"></script>
+<script>
+	var server = io.connect('http://localhost:8080');
+	server.on('connect', function(data){
+		$('#status').html('Connected to chattr');
+		nickname= prompt("What is your name");
+		server.emit('join', nickname);//notifica al servidor el users nickname
+	});
+	
+</script>
+
+------------------------
+<script src="/socket.io/socket.io.js"></script>
+
+<script>
+  var server = io.connect('http://localhost:8080');
+
+  server.on('question', function(question) {
+    insertQuestion(question);
+  });
+  server.on('answer',function(question,response){
+  	answerQuestion(question,response);
+  });
+  //Don't worry about these methods, just assume 
+  //they insert the correct html into the DOM
+  // var insertQuestion = function(question) {
+  // }
+
+  // var answerQuestion = function(question, answer) {
+  // }
+</script>
+
+----------------------
+agregar un chatter a chatters
+socket.on('add chatter',function(name){
+	var chatter = $('<li>'+name+'</li>').data('name', name);
+	$('#chatters').append(chatter);
+});
+server.on('remove chatter',function(name){
+	$('#chatters li[data-name='+name+']').remove();
+});

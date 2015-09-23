@@ -1,0 +1,51 @@
+body{
+	background: #E9E9E9;
+}
+
+.contenedor{
+	width:400px;
+	height: 200px;
+	background: #fff;
+	padding:10px;
+	border:10px solid #2C3E50;
+	margin: 20px;
+	
+	/***********************FLEXBOX***************/
+	display: -webkit-flex;
+	display:-ms-flexbox;	
+	display: flex;
+
+	flex-direction: row; /*row es por defecto*/
+	/*flex-direction: row-reverse; */
+	/*flex-direction:column;*/
+	/*flex-direction:column-reverse;*/
+	/*flex-wrap:no-wrap;*/
+	flex-wrap:no-wrap;
+	justify-content:center;
+	align-items:center;
+	/*align-content:center;*/
+
+
+	/********ATAJO*********/
+	/*flex-flow:row wrap;
+	flex-flow: column no-wrap;*/
+	
+
+
+
+}
+.elemento{
+	flex-shrink:1;
+	color: #fff;
+	margin:5px;
+	width: 100px;
+	/*flex-basis:150px;*/
+	/*display: inline-block;*/
+	height: 50px; /*se agrega un alto a las cajas para que no abarquen todo el espacio verticalmente*/
+
+	background: #E67E22;
+	text-align: center;
+}
+.elemento2{
+	flex-shrink:2;
+}

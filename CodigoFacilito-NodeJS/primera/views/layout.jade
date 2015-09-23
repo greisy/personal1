@@ -1,0 +1,24 @@
+doctype html
+html(lang="en")
+	head
+		title El mejor lugar para comer en el mundo
+		meta(charset="utf-8")
+		link(href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet")
+		link(rel="stylesheet" type="text/css" href="/css/main.css")
+		link(rel="stylesheet" type="text/css" href="/css/animate.css")
+		link(href='https://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css')
+		link(href='https://fonts.googleapis.com/css?family=Lato:400,300,700' rel='stylesheet' type='text/css')
+	body 
+		//la parte que va cambiando se agrupa en un block y le colocamos un nombre
+		div(class="data")
+			nav(class="large-padding fondo-gris")
+				ul(class="no-list mediano")
+					li(class="pacifico col-md-3 inline-block")
+						a(href="index.html" class="green") Codigo Facilito #[small(class="lato small")] Vive, convive y diviertete
+					li(class="pacifico col-md-3 inline-block")
+						a(href="contacto.html") Menu
+					li(class="pacifico col-md-3 inline-block")
+						a(href="contacto.html") Contacto
+
+		block contenido
+		
