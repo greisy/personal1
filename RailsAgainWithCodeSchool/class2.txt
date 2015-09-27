@@ -1,0 +1,65 @@
+Para comunicarnos con la BD usamos la clase activeRecord a traves de los modelos, el activeRecord mapea la clase a la tabla asi cuando colocamos Tweet.find(3) ese find busca en la tabla tweets el registro que tenga el id =3 y el valor que retorna es una instancia de la clase.
+Para no crear objetos vacios que a su vez seran almacenados como registros vacios dentro de la tabla colocamos validaciones como
+class Tweet < ActiveRecord::Base
+	validates_presence_of :status
+end
+Si creamos un nuevo objeto
+t = Tweet.new
+y no le agregamos algun valor al key status y damos
+t.save
+Arrojara false de otro modo arrojara true
+Si queremos ver los errores generados colocamos
+t.errors.messages => {status:["can't be blank"]}
+t.errors[:status][0]
+
+BUNCH OF VALIDATIONS
+validates_presence_of :status
+
+validates_numericality_of :fingers
+
+validates_uniqueness_of :toothmarks
+
+validates_confirmation_of :password
+
+validates_acceptance_of :zombification
+
+validates_length_of :password, minimun:3
+
+validates_format_of :email, with: /regrex/i
+
+validates_inclusion_of :age, in: 21..99
+
+validates_exclusion_of :age, in: 0..21,
+						message: "Sorry you must be over 21"
+OTHER WAY TO WRITE THESE VALIDATION IS COMBINATE THEM IN ONE LINE
+validates :status,
+			presence: true,
+			length: {minimun: 3}
+
+validates	presence: true,
+			numericality: true,
+			uniqueness: true,
+			confirmation: true,
+			acceptance: true,
+			length : {minimun: 3, maximum: 2000},
+			format: {with: /.*/},
+			inclusion: {in: 21..99}
+			exclusion: {in: 0..21}
+			
+RELATIONSHIPS															
+class Zombie < ActiveRecord::Base				class Tweet < ActiveRecord::Base
+	has_many :tweets								belongs_to :zombie
+end
+
+ash = Zombie.find(1) => Devuelve una instancia de la clase Zombie cuyo id es 1
+t = Tweet.create(status: "Your eyelids taste like bacon",zombie: ash) => crea un nuevo objeto y lo almacena en la tabla Tweet con el id 5
+ash.tweets.count  => cuenta todos los tweets que tenga el objeto ash en la tabla tweet
+
+t = Tweet.find(5) => se trae una instancia de la clase Tweet
+t.zombie => devuelve un objeto zombie basado en el zombie_id de t que haga match en la tabla zombie
+t.zombie.name => me da el name del objeto
+
+//EXERCISES
+Assuming the models and relationships are properly defined, find all the weapons that belong to Zombie 'Ashley'.
+ash = Zombie.find(1)
+ash.weapons
