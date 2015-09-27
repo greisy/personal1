@@ -1,0 +1,67 @@
+-----VIEWS
+Print out into the page
+<%= ...%>
+Helper method link
+<%= link_to  tweet.zombie.name, zombie_path(tweet.zombie) %>
+OR
+<%= link_to tweet.zombie.name, tweet.zombie %> Rails sabe que enviandole tweet.zombie (que es una instancia de la clase zombie) va a ir a la vista show de zombie
+LINK RECIPE
+<%= link_to text_to_show, model_instance %> => va a SHOW VIEW
+Ejemplo
+<% Tweet.all.each do |tweet|%> tweet es una variable local a este view
+	<tr>
+		<td><%= link_to tweet.status, tweet %></td> Es importante ver que aqui le estoy pasando un objeto como parametro para construir el path
+	</t>
+	<tr>
+		<td><%= link_to tweet.zombie.name, tweet.zombie %></td> le paso un objeto como parametro para construir el path
+	</tr>
+
+-Para mostrar un mensaje si el array de objetos esta vacio se coloca
+	<% tweets = Tweet.all %>
+	<% tweets.each do |tweet| %>
+	<% end %>
+	<% if tweets.size == 0 %>
+		<em> No tweets found </em>
+	<% end %>
+
+-Si queremos ademas de ver una vista show de un objeto podemos editar y borrar un objeto
+	<% Tweet.all.each do |tweet|%> tweet es una variable local a este view
+		<tr>
+			<td><%= link_to tweet.status, tweet %></td>
+		</t>
+		<tr>
+			<td><%= link_to tweet.zombie.name, tweet.zombie %></td> 
+		</tr>
+		<tr>
+			<td><%= link_to "Edit",	edit_tweet_path(tweet) %></td> 
+		</tr>
+		<tr>
+			<td><%= link_to "Destroy",	tweet, method: :delete %></td> 
+		</tr>
+	<% end %>
+-URL generator methods
+Action							Code					The URL
+List all tweets				tweets_path				/tweets
+New tweet form				new_tweet_path			/tweets/new
+
+tweet = Tweet.find(1)
+Action							Code 						The URL
+Show the tweet 				tweet 						/tweets/1
+Edit the Tweet 				edit_tweet_path(tweet)		/tweets/1/edit
+Delete a Tweet 				tweet, method: :delete 		/tweets/1
+
+VER LA DOCUMENTACION
+- api.rubyonrails.org
+
+ejercicios
+<ul>
+  <% zombies.each do |zombie| %>
+    <li>
+      <%= zombie.name %>
+      # add if statement here
+      <% if zombie.tweets.count > 1 %>
+      <h3> <%= zombie.name %>SMART ZOMBIE. </h3>
+      <% end %>
+    </li>
+  <% end %>
+</ul>

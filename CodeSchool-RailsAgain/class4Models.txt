@@ -1,0 +1,107 @@
+----- BRAINS OF THE APPLICATION
+Usamos modelos para obtener data de la BD y usamos views para mostrar la data que sale de los modelos
+Cuando llega una petición a nuestra aplicación, antes de llegar a una vista, va a alcanzar un controlador; va a buscar dentro del directorio controllers. 
+
+--------*** convention over configuration si podemos seguir una convención para nombrar por ejemplo el nombre del controlador tweets_controller.rb que va a llamar a la vista en este caso show /app/views/tweets/show.html.erb en este caso usamos la convencion de llamar el controlador y la carpeta que contiene sus vistas del mismo nombre no debemos configurar para que relacione las vistas con ese controlador en particular.
+
+En las acciones de los controladores tipicamente llamamos a los modelos
+class TweetsController < ApplicationController
+	def show
+		tweet = Tweet.find(1)
+	end	
+end
+Ahora cuando viene un request, primero va a llamar a la accion/metodo de nuestro controlador, corre ese codigo y cuando llegue al final por default va a ir a mirar a la vista app/views/tweets/show.html.erb y render sus contenido. Ahora sino queremos renderizar la vista de la accion, que por defecto es llamada show sino una vista particular (nombrada diferente que la accion del controlador), colocamos:
+class TweetsController < ApplicationController
+	def show
+		@tweet = Tweet.find(1)
+		render action: 'status'
+	end	
+end
+que va a llamar a la accion app/views/tweets/status.html.erb y mostrarla por pantalla.
+
+Ahora el problema es que solo renderizara el contenido del tweet 1, si quiero mostrar los demas tweets tengo que utilizar el hash params
+params = { key: value}
+class TweetsController < ApplicationController
+	def show
+		@tweet = Tweet.find(params[:id])
+		render action: 'status'
+	end	
+end
+
+PARAMETERS
+
+/tweets/?status=I'm dead
+params = {status: "I'm dead"}	
+@tweet = Tweet.create({status: params[:status])
+
+/tweets/?tweet[status]=I'm dead
+params = {tweet:
+			{
+			status: "I'm dead"
+			}
+		}
+@tweet = Tweet.create(status: params[:tweet][:status])*
+Alternative Syntax
+Como nuestro metodo create esta esperando un hash podemos escribir
+@tweet = Tweet.create(params[:tweet]) que es lo mismo que la expresion de arriba params[:tweet] recrea un hash *
+
+Sin embargo puede ser peligroso utilizar directamente params dentro de los metodos create, update asi que debemos usar strong params que solo restringen del objeto que se esta pasando en el hash params los atributos que se que pueden pasar sin ningun problema
+@tweet = Tweet.create(params.require(:tweet).permit(:status)) paso en require el objeto y en permit las propiedades de mi objeto
+Si hay mas de una propiedad coloco
+@tweet = Tweet.create(params.require(:tweet).permit(:status, :location))
+STRONG PARAMS son solo requeridos cuando CREATING OR UPDATING con multiples atributos
+
+Respond con JSON o XML en vez de contestar la peticion con una pagina lo contesto con un archivo XML o JSON
+XML
+<?xml version="1.0" encoding="UTF-8">
+<tweet>
+	<id type="integer">1</id>
+	<status>Where can I get a good bite to eat?</status>
+	<zombie-id type="integer">1 </zombie-id>
+</tweet>
+
+JSON
+{"tweet":{"id":1,
+			"status":"Where can I get a good bite to eat?",
+			"zombie-id":1}}
+
+Si queremos que responda con formato JSON por ejemplo, la peticion tiene que venir con la siguiente sintasis
+/tweets/1.json
+entonces el enrutador mapea al controlador tweets con la accion show
+class TweetsController < ApplicationController
+	def show
+		@tweet = Tweet.find(params[:id])* //VER QUE NO NECESITO STRONG PARAMS PARA UNA SOLA PROPIEDAD
+		respond_to do |format|
+			format.html #show.html.erb
+			format.json {render json: @tweet} //aqui tweet es la instancia de la clase Tweet que cree arriba *
+		end
+	end	
+end
+El responde_to en format.json llamara al archivo con el contenido
+{"tweet":{"id":1,
+			"status":"Where can I get a good bite to eat?",
+			"zombie-id":1}}
+
+Si queremos responder con formato XML debemos primero ver la forma de la peticion /tweets/1.xml
+class TweetsController < ApplicationController
+	def show
+		@tweet = Tweet.find(params[:id])* //VER QUE NO NECESITO STRONG PARAMS PARA UNA SOLA PROPIEDAD
+		respond_to do |format|
+			format.html #show.html.erb
+			format.json {render json: @tweet} 
+			format.xml {render xml: @tweet}
+		end
+	end	
+end
+
+CONTROLLER ACTIONS
+en un archivo que se comporta como controlador podemos encontrar las siguientes acciones
+class TweetController < ApplicationController	
+	def index 		List all tweets
+	def show		Show a single tweet
+	def new 		Show a new tweet form
+	def edit		Show an edit tweet form
+	def create		Create a new tweet
+	def update 		Update a tweet
+	def destroy		Delete a tweet
+end
