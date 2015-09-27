@@ -1,0 +1,76 @@
+Hash recipe
+variable = {key:value}
+Read recipe
+variable[:key] => value
+t = Tweet.find(3) //coloco el nombre del modelo que se comunica a la tabla de la BD Tweets
+puts t[:id] 	
+hash syntax puts t[:status]	   dot syntax puts t.id
+puts t[:zombie]	-- puts t.zombie
+
+CRUD IN THE DATABASE
+CREATE								RECIPE											
+t = Tweet.new					t = TableName.new						
+t.status = "I <3 brains."		t.key = value					
+t.save							t.save					
+CREATE OPTION 2						RECIPE 2											
+t = Tweet.new(					t = TableName.new(hash)
+	status: "I <3 brains.",		t.save
+	zombie: "Jim")
+	t.save	
+CREATE AND SAVE ALL TOGETHER 		RECIPE 3
+Tweet.create(					TableName.create(hash)	
+	status: "I love brains",
+	zombie: "grey"
+)
+
+READ
+Tweet.find(3) => returns a single tweet with id 3
+
+Tweet.find(3,4,5) => Returns an array of tweets, o sea varios objetos
+
+Tweet.first  => Returns the first tweet
+
+Tweet.last  => Returns the last tweet
+
+Tweet.all 	=> Returns all the tweets
+
+Tweet.count  => returns total number of tweets
+
+Tweet.order(:zombie) => Returns all tweets, ordered by the propiety called zombie
+
+Tweet.limit(10) => Returns the first ten tweets
+
+Tweet.where(zombie: "grey")	=> Returns all tweets with have the propiety zombie called grey
+
+Method chaining
+
+Tweet.where(zombie: "grey").order(:status).limit(10)
+
+Tweet.where(zombie: "grey").first // del arreglo de objetos devuelve el primer elemento
+
+
+UPDATE									RECIPE					
+t = Tweet.find(3)					t = TableName.find(id)		
+t.zombie = "EyeballChomper"			t.key = value
+t.SAVE                              t.save  
+
+ALTERNATIVE syntax                      		 RECIPE 2
+t = Tweet.find(2)							t = TableName.find(id)
+t.attributes = {							t.attributes = hash	
+	status: "Can I munch your eyeballs?",	t.save
+	zombie: "EyeballChomper"
+}
+t.save
+UPDATE AND SAVE THE DATA 							RECIPE 3	
+t = Tweet.find(3)								t = TableName.find(key)	
+t.update(										t.update(hash)
+	status: "Can I munch your eyeballs?",
+	zombie : "EyeballChomper"
+)
+
+DELETE						RECIPE
+t = Tweet.find(3)		t = TableName.find(id)
+t.destroy				t.destroy
+
+ALTERNATIVE syntax 				RECIPE 2			
+Tweet.find(3).destroy		TableName.find(id).destroy
