@@ -1,0 +1,81 @@
+----LEVEL 5
+resources :zombies
+CUSTOM ROUTES
+-http://localhost:3000/new_tweet		render		http://localhost:3000/tweets/new
+Controller name tweets
+action name 	new
+
+en el archivo de configuracion
+ZombieTwitter::Application.routes.draw do
+	resource :tweets
+	get 'new_tweet' => 'tweets#new' /// new_tweet es el path que viene del URL y tweets#new es el 								controlador#accion
+end
+
+-http://localhost:3000/all		render		http://localhost:3000/tweets
+controlador tweets
+accion 		index
+/config/routes.rb
+get 'all' => 'tweets#index', as: 'all_tweets' // all_tweets sera utilizado para enlazar con el controlador tweet y la accion index, ya que si queremos enlazar con este custom path tweets_path wouldn't work
+<%= link_to "All tweets", all_tweets_path %> hara link con http://localhost:3000/all que a su vez conecta con el controlador tweets y la accion index
+
+Podemos redirigir una entrada del URL por otra por ejemplo
+http://localhost:3000/all 			redirect_to			http://localhost:3000/tweets
+/config/routes.rb
+get '/all' => redirect('/tweets') sustituyo /all por /tweets
+get '/google' => redirect('/www.google.com')
+
+Root Route
+http://localhost:3000/		render 		http://localhost:3000/tweets
+/config/routes.rb
+root to: "tweets#index"
+<%= link_to "All tweets", root_path %> cuando alguien le da click a este link va a ir a http://localhost:3000/ que a su vez es tomado como ir al controlador tal con la accion tal
+
+Ahora si por ejemplo tengo el URL original de la pagina que va al index por ejemplo http://localhost:3000/ + local_tweets/32828 o http://localhost:3000/local_tweets/32801
+Podemos reusar la accion index porque me sirve para listar todos los tweets solo que ahora seran de un id especifico
+def index
+	if params[:zipcode] // Si existe esta propiedad en el hash params busca los tweets
+		@tweets = Tweet.where(zipcode: params[:zipcode])
+	else
+		@tweet = Tweet.all
+	end
+	respond_to do |zombie|
+		format.html
+		format.xml {render xml: @tweet}
+	end		
+end
+
+Para enrutar la peticion que viene del URL con el controlador y su accion se hace
+get '/local_tweets/:zipcode' =>	'tweets#index', as: 'local_tweets' // local_tweets requiere un parametro cuando se llame en el <%= link_to "Tweets in 32828", local_tweets_path(32828) %>
+:zipcode es referenciado en el controlador por params[:zipcode]
+:zipcode va a servir como key para el valor que viene en el URL http://localhost:3000/local_tweet/32828
+
+
+Ahora por ejemplo si queremos tomar el nombre de usuario de un twittero
+http://twitter.com/github
+get ':name' =>	'tweets#index', as: 'zombie_tweets' //hay que notar que :name es lo ultimo que se coloca en el URL
+http://twitter.com/:name
+<%= link_to "Greisy", zombie_tweets_path('Greisy') %>
+def index
+	if params[:name] // Si existe esta propiedad en el hash params busca los tweets
+		@zombie = Zombie.where(name: params[:name]).first
+		@tweets = @zombie.tweets
+	else
+		@tweets = Tweet.all
+	end
+	
+end
+
+
+-----EJERCICIOS
+TwitterForZombies::Application.routes.draw do
+  get '/undead' => redirect('/zombies')
+end
+
+TwitterForZombies::Application.routes.draw do
+  root to: "zombies#index"
+end
+
+Create a named route. It should generate a path like '/zombies/:name' where :name is a parameter, and points to the index action in ZombiesController. Name the route 'graveyard'
+TwitterForZombies::Application.routes.draw do
+  get '/zombies/:name', to: 'zombies#index', as: 'graveyard'
+end

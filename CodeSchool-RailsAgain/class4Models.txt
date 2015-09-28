@@ -105,3 +105,84 @@ class TweetController < ApplicationController
 	def update 		Update a tweet
 	def destroy		Delete a tweet
 end
+
+Si tenemos una lista de tweets y para cada uno de ellos tenemos un link de editar y uno de borrar, esto permitira que cualquier persona pueda realizar estas tareas, por lo que en la accion edit podemos validar si el usuario puede o no editar un tweet
+class TweetController < ApplicationController
+	def edit
+		@tweet = Tweet.find(params[:id])
+		if session[:zombie_id] != @tweet.zombie //Aqui verifico que quien se logueo es el mismo que hizo el tweet
+			flash[:notice] = "Sorry, you can't edit this tweet"
+			redirect_to(tweets_path) // redirect the brownser to differents actions
+		end
+	end
+session funciona como un hash por usuario
+cada usuario obtiene su session hash donde podemos almacenar cosas, entonces cuando alguien hace login in se setean las propiedades del objeto session con informacion del usuario que se logueo
+flash[:notice] es un helper hash que se usa para enviar mensajes al usuario
+Podemos juntar redirect_to() con flash[:notice] con 
+redirect_to(tweets_path,
+notice: "Sorry, you can't edit this tweet"
+)
+
+Este flash[:notice] debe especificarse donde se va a ver en la parte de la vista, se puede colocar en el layout
+<% if flash[:notice] %>//si hay algun mensaje esperando ser mostrado al usuario
+	<div class="notice"><%= flash[:notice]%></div>
+<% end %>
+
+Las ascciones edit, update y destroy necesitan autorizacion es decir if session[:zombie_id] != @tweet.zombie
+class TweetController < ApplicationController
+	before_action :get_tweet, only: [:edit,:destroy,:update]
+	before_action :check_auth, :only => [:edit,:destroy,:update]
+	def get_tweet
+		@tweet = Tweet.find(params[:id])
+	end
+	def check_auth
+		if session[:zombie_id] != @tweet.zombie //Aqui verifico que quien se logueo es el mismo que hizo el tweet
+			flash[:notice] = "Sorry, you can't edit this tweet"
+			redirect_to(tweets_path) // redirect the brownser to differents actions
+		end
+	end
+	def edit
+	end
+	def destroy
+	end
+	def update
+	end
+end
+
+
+-----EJERCICIOS
+class ZombiesController < ApplicationController
+  def create
+    @zombie = Zombie.create(zombie_params)
+    redirect_to(@zombie)
+  end
+
+  private
+
+  def zombie_params
+    params.require(:zombie).permit(:name, :graveyard)
+  end
+end
+
+
+*-----ejercicio 2 Add a before_action that calls a method to check if a Zombie has tweets. Redirect to zombies_path if the zombie doesn't have tweets, only on show.
+
+class ZombiesController < ApplicationController
+  before_action :find_zombie
+  before_action :zombie_has_tweets, only: :show
+  def show
+    render action: :show
+  end
+  def zombie_has_tweets
+     if @zombie.tweets.size <= 0
+       redirect_to(zombies_path)
+     else
+       return true
+     end
+   
+  end
+
+  def find_zombie
+    @zombie = Zombie.find params[:id]
+  end
+end
