@@ -1,0 +1,39 @@
+rails console
+Zombie.create(name: "Grey", age: 27)
+z = Zombie.first # Bringing me the first object in the DB and put it inside the variable z
+z.name = "Caike Souza"
+z.save
+# Here we change the name of the object property name but we don't change the object though until we put z.save, because in this case we are making an update method
+first - Search the object in the DB
+second - change its properties's values
+thrid - save the modified object in the DB
+ #
+
+ Create migration by hand that adds two fields to the tweets table: a location string field which has a limit of 30 and a boolean field called show_location which defaults to false. 
+ class AddLocationToTweets < ActiveRecord::Migration
+  def change
+    add_column :tweets, :location, :string, limit: 30
+    add_column :tweets, :show_location, :boolean, default: false
+  end
+end
+
+Now that we've rolled back, add a category_name string field and use the rename command to rename the status column to message instead. 
+class AddLocationToTweets < ActiveRecord::Migration
+  def change
+    add_column :tweets, :location, :string, limit: 30
+    add_column :tweets, :show_location, :boolean, default: false
+    add_column :tweets, :category_name, :string
+    rename_column :tweets, :status, :message
+  end 
+end
+On second thought, that category_name string column was a bad idea. Write a migration to remove the category_name column. 
+class RemoveCategoryNameFromTweets < ActiveRecord::Migration
+  def up
+    remove_column :tweets, :category_name
+  end
+
+  def down
+    add_column :tweets, :category_name, :string
+  end
+end
+
