@@ -40,7 +40,7 @@ Tweet.order(:zombie) => Returns all tweets, ordered by the propiety called zombi
 
 Tweet.limit(10) => Returns the first ten tweets
 
-Tweet.where(zombie: "grey")	=> Returns all tweets (array) with have the propiety zombie called grey
+Tweet.where(zombie: "grey")	=> Returns all tweets with have the propiety zombie called grey
 
 Method chaining
 

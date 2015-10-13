@@ -18,11 +18,9 @@ Ejemplo
 
 -Para mostrar un mensaje si el array de objetos esta vacio se coloca
 	<% tweets = Tweet.all %>
-	<% if tweets.size > 0 %>
-		<% tweets.each do |tweet| %>
-		<% end %>
-		
-	<% else %>
+	<% tweets.each do |tweet| %>
+	<% end %>
+	<% if tweets.size == 0 %>
 		<em> No tweets found </em>
 	<% end %>
 
@@ -61,7 +59,7 @@ ejercicios
     <li>
       <%= zombie.name %>
       # add if statement here
-      <% if zombie.tweets.size > 1 %>
+      <% if zombie.tweets.count > 1 %>
       <h3> <%= zombie.name %>SMART ZOMBIE. </h3>
       <% end %>
     </li>
