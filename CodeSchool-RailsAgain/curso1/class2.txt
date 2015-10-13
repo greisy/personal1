@@ -60,6 +60,6 @@ t.zombie => devuelve un objeto zombie basado en el zombie_id de t que haga match
 t.zombie.name => me da el name del objeto
 
 //EXERCISES
-Assuming the models and relationships are properly defined, find all the weapons that belong to Zombie 'Ashley'.
+Assuming the models and relationships are properly defined, find all the weapons that belong to Zombie 'Ashley'.  
 ash = Zombie.find(1)
 ash.weapons

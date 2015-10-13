@@ -2,8 +2,8 @@
 resources :zombies
 CUSTOM ROUTES
 -http://localhost:3000/new_tweet		render		http://localhost:3000/tweets/new
-Controller name tweets
-action name 	new
+Controller's name tweets
+action's name 	new
 
 en el archivo de configuracion
 ZombieTwitter::Application.routes.draw do
@@ -30,7 +30,7 @@ http://localhost:3000/		render 		http://localhost:3000/tweets
 root to: "tweets#index"
 <%= link_to "All tweets", root_path %> cuando alguien le da click a este link va a ir a http://localhost:3000/ que a su vez es tomado como ir al controlador tal con la accion tal
 
-Ahora si por ejemplo tengo el URL original de la pagina que va al index por ejemplo http://localhost:3000/ + local_tweets/32828 o http://localhost:3000/local_tweets/32801
+Ahora si por ejemplo tengo el URL original de la pagina que va al index por ejemplo http://localhost:3000/local_tweets/32828 o http://localhost:3000/local_tweets/32801
 Podemos reusar la accion index porque me sirve para listar todos los tweets solo que ahora seran de un id especifico
 def index
 	if params[:zipcode] // Si existe esta propiedad en el hash params busca los tweets
