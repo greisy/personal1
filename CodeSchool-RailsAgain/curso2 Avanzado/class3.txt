@@ -1,0 +1,86 @@
+Forms and Inputs helpers
+create and update form
+---------------------------------
+|<%= form_for(@zombie) do |f|%> |
+|								|	
+|<% end %>						|			
+---------------------------------
+if @zombie isn't saved to the DB yet it's gonna generate the next code
+<form action="/zombies" method= "post" />
+If @zombie is saved to the DB it's gonna to create a code like this:
+<form action="/zombies" method= "POST">
+	<input name="_method" type="hidden" value="put" />
+
+SUBMIT BUTTON
+---------------------------------
+|<%= form_for(@zombie) do |f|%> |
+|	...							|	
+|	<%= f.submit %>				|
+|<% end %>						|			
+---------------------------------
+if @zombie isn't saved to the DB yet it's gonna generate the next code
+	<input name="commit" type="submit" value="Create Zombie">
+If @zombie is saved to the DB it's gonna to create a code like this:
+	<input name="commit" type="submit" value="Update Zombie">
+
+TEXT_FIELD HELPER
+---------------------------------
+|<%= form_for(@zombie) do |f|%> |
+|	...							|
+|	<%= f.text_field :name	%>	|	
+|	<%= f.submit %>				|
+|<% end %>						|			
+---------------------------------
+When submited, request parameters:
+:params=>{:zombie =>{:name =>"Eric"}}
+if @zombie isn't saved to the DB yet it's gonna generate the next code
+	<%= input type="text" name="zombie[name]" size="30" %>
+If @zombie is saved to the DB it's gonna to create a code like this:
+	<%= input type="text" name="zombie[name]" size="30" value="Eric" %>
+If @zombie.name has a validation error, it's gonna grab the field between a div with a class, so we can change the properties of the class
+<div class="field_with_errors">
+	<input type="text" name="zombie[name]" size="30" value="" /> 
+</div>
+
+LABEL HELPER
+---------------------------------
+|<%= form_for(@zombie) do |f|%> |
+|	...							|
+|	<%= f.label :name %><br/>	|
+|	<%= f.text_field :name	%>	|	
+|	<%= f.submit %>				|
+|<% end %>						|			
+---------------------------------
+will render out
+<label for="zombie_name">Name</label>
+If @zombie.name has a validation error
+<div class="field_with_errors">
+	<label for="zombie_name">Name</label>
+</div>
+
+INPUT HELPERS
+<%= f.text_area :bio %>
+
+<%= f.check_box :rotting %> #check box used for booleans
+List of radio buttons (without their labels)
+<%= f.radio_button :decomp, 'rotting' %>
+<%= f.radio_button :decomp, 'stale' %>
+
+Select box with three options
+<%= f.select :decomp, ['fresh', 'rotting', 'stale']%>
+
+Select box with three options, each with a numerical value
+<%= f.select :decomp, [['fresh',1], ['rotting',2], ['stale',3]]%>
+
+ALTERNATIVE TEXT INPUT HELPERS
+<%= f.password_field :password %>
+<%=	f.number_field :price %>
+<%=	f.range_field :quality %>
+<%=	f.email_field :email %>
+<%=	f.uri_field :website %>
+<%=	f.telephone_field :mobile %>
+
+
+--------------------------
+UPDATING THE CONTROLLER FOR NESTING
+/zombies/4/tweets/2 -----> params ={:zombie_id =>4, id=>2}
