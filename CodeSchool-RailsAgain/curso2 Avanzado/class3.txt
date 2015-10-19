@@ -84,3 +84,94 @@ ALTERNATIVE TEXT INPUT HELPERS
 --------------------------
 UPDATING THE CONTROLLER FOR NESTING
 /zombies/4/tweets/2 -----> params ={:zombie_id =>4, id=>2}
+/zombies/4/tweets -----> params = {:zombie_id => 4}
+class TweetsController 
+	before_filter :get_zombie
+
+	def get_zombie
+		@zombie = Zombie.find(params[:zombie_id])
+	end
+
+	def show
+		@tweet = @zombie.tweets.find(params[:id])
+	end
+
+	def index
+		@tweets = @zombie.tweets
+	end
+end
+Nested rake routes
+zombie_tweets 	GET 	/zombies/:zombie_id/tweets
+				POST 	/zombies/:zombie_id/tweets
+new_zombie_tweet GET 	/zombies/:zombie_id/tweets/new
+edit_zombie_tweet GET 	/zombies/:zombie_id/tweets/edit
+zombie_tweet    GET 	/zombies/:zombie_id/tweets/:id
+				PUT 	/zombies/:zombie_id/tweets/:id
+				DELETE	/zombies/:zombie_id/tweets/:id
+
+<%= link_to "#{@zombie.name}'s Tweets, zombie_tweets_path(@zombie) %>
+<%= link_to "New tweet", new_zombie_tweet_path(@zombie)%>
+<%= link_to "Edit tweet", edit_zombie_tweet_path(@zombie) %>
+<%= link_to "Show tweet", zombie_tweet_path(@zombie, @tweet) %>
+<%= link_to "Show", [@zombie,@tweet] %>
+<%= link_to "Destroy", [@zombie,@tweet], method: :delete %>
+
+app/views/tweets/index.html.erb
+<% @tweets.each do |tweet| %>
+<tr>
+	<td><%= tweet.body %></td>
+	<td><%= link_to "Show", [@zombie,@tweet] %></td>
+	<td><%= link_to "Edit tweet", edit_zombie_tweet_path(@zombie) %></td>
+	<td><%= link_to "Destroy", [@zombie,@tweet], method: :delete %></td>
+</tr>
+<%= link_to "New tweet", new_zombie_tweet_path(@zombie)%>
+
+app/views/tweets/_form.html.erb
+<%= form_for([@zombie,@tweet]) do |f| %>
+
+app/controller/tweets_controller.rb
+def create
+	@tweet = @zombie.tweets.new(params[:tweet])
+	respond_to do |format|
+		if @tweet.save
+			format.html {redirec_to [@zombie, @tweet],
+			notice: 'Tweet was successfully created'}
+			format.json {render json: [@zombie,@tweet], 
+						status: :created, 
+						location: [@zombie, @tweet]}
+		else
+			format.html { render action: "new"}
+			format.json { render json: @tweet.errors,
+							status: :unprocessable_entity }	
+		end
+	end
+end
+
+
+----------------EJERCICIOS
+Create the form for entering tweet status (text_area) and location (text_field) using the appropriate Rails view helpers. All you need is a form_for block, the input helpers, and a submit button. 
+<%= form_for(@tweet) do |f| %>
+  <%= f.text_area :status %>
+  <%= f.text_field :location %>
+  <%= f.submit %>
+<% end %>
+
+Look at the following database table and create the proper input fields for the columns listed here. 
+<%= form_for(@weapon) do |f| %>
+    <%= f.text_field :name%>
+    <%= f.number_field :ammo %>
+    <%= f.check_box :is_broken %>
+<% end %>
+
+Rather than having a weapon that is broken or not, lets instead have a condition field which is either "New", "Rusty", or "Broken". Add a set of radio buttons where the user can select one of these states. Make "New" be checked by default. 
+<%= form_for(@weapon) do |f| %>
+  <%= f.radio_button :condition, 'New', checked: true%>
+  <%= f.radio_button :condition, 'Rusty' %>
+  <%= f.radio_button :condition, 'Broken' %>
+<% end %>
+
+Instead of using radio buttons, use a select box for the condition. Refactor the code below: 
+<%= form_for(@weapon) do |f| %>
+  <%= f.select :condition, ['New','Rusty', 'Broken']%>
+
+<% end %>
