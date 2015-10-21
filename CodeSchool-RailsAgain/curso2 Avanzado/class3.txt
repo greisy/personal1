@@ -175,3 +175,54 @@ Instead of using radio buttons, use a select box for the condition. Refactor the
   <%= f.select :condition, ['New','Rusty', 'Broken']%>
 
 <% end %>
+
+Write the nested route that will allow us to nest tweets and weapons under the zombie resource. The idea here is that a zombie has many tweets and zombie has many weapons. 
+RailsForZombies::Application.routes.draw do
+  resources :zombies do
+     resources :tweets
+     resources :weapons
+  end
+end
+
+
+Objective
+
+Now that we have the proper route, we need to make sure the weapons controller properly looks up both the zombie and the weapon when we request /zombies/2/weapons/1. Finish this controller: 
+
+class WeaponsController < ApplicationController
+  def show 
+    @zombie = Zombie.find(params[:zombie_id])
+    @weapon = @zombie.weapons.find(params[:id])
+  end
+end
+
+Now create the proper link_to for when we view a zombie and want to show each of its weapons, and when we want to create a new weapon for this zombie. 
+<h2><%= @zombie.name %>'s weapons</h2>
+<ul>
+  <% @weapons.each do |w| %>
+    <li><%= link_to w.name, [@zombie,w] %></li>
+  <% end %>
+</ul>
+
+<%= link_to "New Weapon", new_zombie_weapon_path(@zombie) %>
+
+
+Change the form_for below to use the proper nesting for creating a new weapon for a Zombie. 
+<%= form_for([@zombie, @weapon]) do |f| %>
+  <%= f.text_field :name %>
+
+  <%= f.submit %>
+<% end %>
+
+Modify the following code to make it more pretty, using titleize, to_sentence, pluralize, and number_to_currency (in just that order) 
+<h2><%= @zombie.name.titleize %></h2>
+<p>Weapons: <%= @zombie.weapon_list.to_sentence %></p>
+<p><%= pluralize(@zombie.tweets.size, 'Tweet') %></p>
+<p>Money in Pocket <%= number_to_currency(@zombie.money) %></p>
+
+Refactor the code below to move the form into the _form.html.erb partial. 
+<h1><%= @zombie.name %>'s Weapons</h1>
+<% @weapons.each do |weapon| %> 
+  <%= render weapon %>
+<% end %>
+
