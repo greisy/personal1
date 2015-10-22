@@ -1,0 +1,156 @@
+CREATE A ZOMBIE MAILER
+
+Objective: Create emails for decomposition change and lost brain
+generating a mailer ZombieMailer who has the emails decomp_change and lost_brain
+$ rails g mailer ZombieMailer decomp_change lost_brain
+inside of zombiemailer.rb
+class ZombieMailer < ActionMailer::Base
+	default from "from@example.com"
+
+	/*def decomp_change
+		@greeting = "Hi"
+
+		mail to: "to@example.com"
+	end*/
+
+	def decomp_change(zombie)
+		@zombie = zombie #@zombie es una variable de instancia que puede ser accedida desde la vista del mailer
+		@last_tweet = @zombie.tweets.last
+
+		attachments['z.pdf'] = File.read("#{Rails.root}/public/zombie.pdf")
+		mail to: @zombie.email, subject: "Your decomp stage has changed"
+	end
+end
+
+Mailer views
+app/views/zombie_mailer/decomp_change.text.erb
+Greeting <%= @zombie.name %>
+
+	Your decomposition state is now <%= @zombie.decomp %> and your last tweet was: <%= @last_tweet.body %>
+Good luck!
+
+app/views/zombie_mailer/decomp_change.html.erb
+<h1>Greeting <%= @zombie.name %></h1>
+	<p>Your decomposition state is now <%= @zombie.decomp %> and your last tweet was: <%= @last_tweet.body %></p>
+<%= link_to "View your self", zombie_url(@zombie)%>
+
+SENDING MAIL
+app/models/zombie.rb
+class Zombie < ActiveRecord::Base
+	after_save :decomp_change_notification, if: :decomp_changed? #decomp_changed? es un metodo helper que se encuentra incluido con activeRecord por defecto cuando un atributo ha cambiado podemos llamar a ese método
+
+	private
+
+	def decomp_change_notification
+		ZombieMailer.decomp_change(self).deliver
+	end
+end
+
+Rails es bueno para enviar correos de recuperacion de contraseña, welcome email,
+Se usa un servicio externo cuando se quiere suscripciones, desincribirse como MAD MIMI
+se debe agregar la gem (libreria) al archivo gemfile
+gem 'madmimi' then bundle install
+
+ASSET PIPELINE
+app -> assets es para código específico de la aplicación
+lib -> asstes es para código que comparte entre mis aplicaciones Rails
+vendor -> assets 3rd. party code
+
+Para buscar cualquier stylesheet, imagen o javascript solo debemos referirnos a 
+assets/nombre.extension
+y rails buscará el archivo dentro de estas tres carpetas assets mencionadas arriba
+Tambien podemos incluir los assets en los archivos javascript
+<%= javascript_include_tag "custom" %> custom tiene una extension .js
+stylesheet
+<%= stylesheet_link_tag "style" %> style tiene una extension .css
+imagen
+<%= image_tag "rails.png"%> aqui si debo especificar la extension del archivo
+
+Si colocamos la extensión erb en los archivos .css podemos embeber codigo ruby por ejemplo
+background-image: url(<%= asset_path('button.png')%>)
+
+#Si quitamos las gemas sass- y coffeescript quitara las extension de los archivos stylesheet y javascript
+
+en javascript/application.js para incluir archivo o librerias que se requieren se utiliza
+//= require jquery	include the jQuery framework JavaScript
+//= require jquery_ujs	include Rails specific unobtrusive JavaScript
+//= require_tree .	include all files in this directory
+en stylesheet files se agrega
+/*
+	*=	require_reset 	incluye su contenido antes que el contenido de este archivo, dado la instruccion de abajo.
+	*= require_self 	para especificar donde insertar contenido en este archivo &
+*/
+&Es decir, si coloco algunas reglas dentro de este archivo se incluiran antes que los demás archivos asi que tendran mas prioridad
+
+
+##es importante destacar que esos include en el ambiente de desarrollo producen algo como lo siguiente
+<script src="/assets/application.js" type="text/javascript"></script>
+en produccion, es decir cuando ya se este utilizando publicamente se genera
+<script src="/assets/application-232876483243.js" type="text/javascript"></script> se agrega un fingerprint asi que si el archivo javascript no cambia el cliente no tiene que recargar los javascripts
+
+SI se tienen archivos dentro de otros assets y se quiere incluir en el un asset particular se coloca
+//= require <nombre_del_archivo>
+
+-----------EJERCICIOS
+Code up the low_ammo mailer with the subject of "#{weapon.name} has low ammo", the email should be sent to the zombie.email. Lastly, set the default from address for all emails in WeaponMailer to admin@rfz.com
+class WeaponMailer < ActionMailer::Base
+  default from: "admin@rfz.com"
+  def low_ammo(weapon, zombie) 
+    mail to: zombie.email, subject: "#{weapon.name} has low ammo"
+  end
+end
+
+Finish coding the check_ammo method on the Weapon model so when we have exactly three ammo left, it will send out the low_ammo mailer we just created.
+
+class Weapon < ActiveRecord::Base
+  belongs_to :zombie 
+
+  before_save :check_ammo
+  
+  def check_ammo
+    if ammo == 3
+      WeaponMailer.low_ammo(self,zombie).deliver
+    end  
+  end
+end
+
+Change the low_ammo method to include a picture of the weapon that's low on ammo as an attachment. You can name the file weapon.jpg and load the file using weapon.picture_file. 
+class WeaponMailer < ActionMailer::Base
+  default from: "admin@rfz.com"
+
+  def low_ammo(weapon, zombie)
+    attachments['weapon.jpg']= weapon.picture_file 
+    mail to: zombie.email, subject: "#{weapon.name} has low ammo"
+  end 
+end
+
+Convert the following to their appropriate asset tags. 
+<img src="/assets/weapon.png" />
+<script src="/assets/weapon.js" />
+<link href="/assets/weapon.css" media="screen" rel="stylesheet" type="text/css" />
+
+<%= image_tag "weapon.png" %>
+<%= javascript_include_tag "weapon.js" %>
+<%= stylesheet_link_tag "weapon" %>
+
+Convert the following scss.erb file to properly reference the asset_path for the image listed in it. Also, try refactoring the scss to use nesting. 
+h2#newUser {
+  text-indent: -9999px; 
+}
+
+h2#newUser a {
+  height: 64px;
+  width: 50px;
+  display: block;
+  background: url(/assets/rails.png) no-repeat;
+}
+---como quedo
+h2#newUser {
+  text-indent: -9999px; 
+  a {
+  height: 64px;
+  width: 50px;
+  display: block;
+  background: url(<%= asset_path('rails.png')%>) no-repeat;
+  }
+}
