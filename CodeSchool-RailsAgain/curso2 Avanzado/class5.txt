@@ -1,0 +1,347 @@
+Por default una acción renderizará el view asociado a esta por ejemplo
+class ZombieController < AppplicationController
+	def show
+		@zombie = Zombie.find(params[:id])
+	end
+	By default looks for app/views/zombies/show.html.erb
+
+Para responder en HTML o JSON necesitamos agregar
+	def show
+		@zombie = Zombie.find(params[:id])
+		respond_to do |format|
+			format.html # show.html.erb
+			format.json {render json: @zombie}
+		end
+	end
+Si un zombie está muerto y se quiere mostrar un HTML distinto del generado por defecto
+	def show
+		@zombie = Zombie.find(params[:id])
+		respond_to do |format|
+			format.html do
+				if @zombie.decomp == 'Dead (again)'
+					render :dead_again
+				end
+			end #IF NOT DEAD, RENDERS SHOW
+			format.json {render json: @zombie}
+Si no queremos que la aplicacion responda con HTML Y JSON removemos el bloque de respond_to
+	def show
+		@zombie = Zombie.find(params[:id])
+		if @zombie.decomp == 'Dead (again)'
+			render :dead_again
+		end
+	end
+
+Si sólo necesitamos JSON como respuesta colocamos
+	def show
+		@zombie = Zombie.find(params[:id])
+		render json: @zombie
+	end
+	Las respuestas JSON necesitan un código de estatus HTTP
+	200 :ok						401 :unauthorized
+	201 :created				102 :processing
+	422 :unprocessable_entity	404 :not_found
+
+	Examples:
+	render json: @zombie.errors, status: :unprocessable_entity
+	render json: @zombie, status: :created, location: @zombie #es de buenas prácticas cada vez que se crea un nuevo recurso mostrar la ubicación de ese recurso.
+
+CUSTOM ROUTE CHALLENGE
+Create a new action in the Zombies controller which returns JUST decomp in JSON, and if "dead (again)" give status :unprocessable_entity
+Primero como estamos creando una accion personalizada debemos agregar una nueva ruta
+1.-Queremos crear la ruta http://localhost:3000/zombies/4/decomp
+en routes.rb
+match 'zombies/:id/decomp' => 'Zombies#decomp', :as => :decomp_zombie
+
+o podemos colocar dentro del resource anidado
+resource :zombies do
+	resource :tweets
+	get :decomp, on: :member #creates a custom RESTful Route
+end
+$ rake routes arroja
+decomp_zombie GET /zombies/:id/decomp {:action => "decomp", :controller =>"zombies"}
+Then we can use this route helper:
+<%= link_to "Get Decomposition status", decomp_zombie_path(@zombie) %>
+
+2 types of custom routes
+:member Acts on a single resource
+:collectio Acts on a collection of resource
+
+ROUTE 								URL 						Route helper
+get :decomp, on: :member		/zombies/:id/decomp 			decomp_zombie_path(@zombie)
+put :decay, on: :member			/zombies/:id/decay				decay_zombie_path(@zombie)
+	
+get :fresh, on: :collection		/zombies/fresh					fresh_zombies_path
+post :search, on: :collection	/zombies/search					search_zombies_path
+
+Examples:
+	<%= link_to 'fresh zombies', fresh_zombies_path %>
+	<%= form_tag(search_zombies_path) do |f| %>	
+
+2.-Después debemos crear una nueva accion en el controlador
+class ZombieController < AppplicationController
+	def decomp
+		@zombie = Zombie.find(params[:id])
+		if @zombie.decomp == "Dead (again)"
+			render json: @zombie, status: :unprocessable_entity
+		else
+			render json: @zombie, status: :ok
+		end
+	end
+end
+
+CUSTOMIZE JSON RESPONSE
+@zombie.to_json(only: :name) 			{ "name": "Eric"}
+@zombie.to_json(only: [:name, :age])	{"name": "Eric", "age": 25}
+@zombie.to_json(except: [:created_at, :updated_at, :id, :email, :bio]) 	{"age":25,"decomp":"fresh","name":"Eric, "rotting":false}
+INCLUIR LOS OBJETOS RELACIONADOS CON EL OBJETO QUE SE RETORNA
+@zombie.to_json(:include: :brain, except:[:created_at,updated_at,:id])
+{
+	"age": 25,
+	"bio": "I am zombified",
+	"decomp": "Fresh",
+	"email": "zom@bied.com",
+	"name": "Eric",
+	"rotting": false,
+	"brain": {"flavor":"Butter","status":"Smashed", "zombie_id":3}
+
+}
+
+SETTING THE JSON RESPONSE DEFAULT
+@zombie.to_json
+
+class Zombie...
+	def as_json(options = nil)
+		super(options || {include: :brain, except: [:created_at,:updated_at, :id]})
+	end
+end
+Cuando renderizamos como json: @zombie.to_json(only: :decomp) Si dentro de la llamada al metodo as_json hay options en este caso only: :decomp cuando vaya al metodo "as_json" mostrará solo la propiedad decomp del objeto Zombie 
+{
+	"decomp": "Fresh",
+}
+pero si hacemos render json: @zombie.to_json y no colocamos nada como argumento va a agregar al objeto Zombie que devolvera el hash que hemos creado dentro del metodo as_json, o sea, {include: :brain, except: [:created_at,:updated_at, :id]}), es decir, retornará
+{
+	"age": 25,
+	"bio": "I am zombified",
+	"decomp": "Fresh",
+	"email": "zom@bied.com",
+	"name": "Eric",
+	"rotting": false,
+	"brain": {"flavor":"Butter","status":"Smashed", "zombie_id":3}
+
+}
+EN DEFINITIVA QUEDARIA
+class ZombieController < AppplicationController
+	def decomp
+		@zombie = Zombie.find(params[:id])
+		if @zombie.decomp == "Dead (again)"
+			render json: @zombie.to_json(only: :decomp), status: :unprocessable_entity
+		else
+			render json: @zombie.to_json(only: :decomp)
+		end
+	end
+end
+
+CREATING AJAX LINKS
+TAKS: When delete is pressed do a fade out, instead of a page refresh
+1.-Lo primero que debemos hacer es MAKE THE LINK A REMOTE CALL
+<% @zombies.each do |zombie| %>
+	<%= div_for zombie do %>
+		<%= link_to "Zombie #{zombie.name}", zombie %>
+		<div class="zombie">
+			<%= link_to "edit", edit_zombie_path(zombie) %>
+			<%= link_to "delete", zombie, method: :delete, remote: true %> //LLAMADA AJAX agregar remote: true
+			/// lo que se genera es <a href="/zombies/5" data-method="delete"
+														 data-remote="true" rel="nofollow">delete</a>	
+		</div>
+	<% end %>
+<% end %>
+2.-Despues permitir al controlador aceptar la peticion javascript
+en app/controller/zombies_controller.rb
+class ZombiesController < ApplicationController
+	def destroy
+		@zombie = Zombie.find(params[:id])
+		@zombie.destroy
+
+		respond_to do |format|
+			format.html {redirect_to zombies_url} //aqui redirige a otra accion ya que si solo renderizase su accion "index" no tiene cargado todos los zombies solamente en esta accion se esta trayendo uno
+			format.json { head :ok }
+			format.js
+		end
+	end
+end
+
+3.-Luego escribir el javascript para mandarlo de vuelta a el cliente
+app/views/zombies/destroy.js.erb
+$('#<%= dom_id(@zombie)%>').fadeOut();
+
+ON THE SAME ZOMBIE INDEX PAGE, CREATE AN AJAX FORM WHICH WILL CREATE A NEW ZOMBIE AND ADD IT TO THE LIST.
+1.-Write format.js in the controller
+	class ZombiesController < ApplicationController
+		def create
+			@zombie = Zombie.new(params[:zombie])
+			
+			respond_to do |format|
+				if @zombie.save
+					format.html {}
+					format.json
+				else
+					format.html {}
+					format.json
+				end
+				format.js
+			end
+		end
+
+	end
+2.-Refactor the view and create the form
+<div id="zombies">
+<% @zombies.each do |zombie| %>
+	<%= div_for zombie do %>
+		<%= link_to "Zombie #{zombie.name}", zombie %>
+		<div class="zombie">
+			<%= link_to "edit", edit_zombie_path(zombie) %>
+			<%= link_to "delete", zombie, method: :delete, remote: true %>
+		</div>
+	<% end %>
+<% end %>
+</div>
+colocaremos cada objeto del arreglo de objetos zombie dentro de un partial
+app/views/zombies/_zombies.html.erb
+<%= div_for zombie do %>
+	<%= link_to "Zombie #{zombie.name}", zombie %>
+	<div class="zombie">
+		<%= link_to "edit", edit_zombie_path(zombie) %>
+		<%= link_to "delete", zombie, method: :delete, remote: true %>
+	</div>
+<% end %>
+luego envolveremos ese partial dentro de la iteracion al arreglo @zombie
+<div id="zombies">
+<% @zombies.each do |zombie| %>
+	<%= render zombie %> //Rails busca en el modelo activeRecord de zombie, luego busca en la clase zombie y luego busca por un partial usando como nombre de la clase "zombie"
+<% end %>
+</div>
+Tambien podemos refactorizar este loop como 
+<div id="zombies">
+	<%= render @zombies %>// Rails sabe que tenemos un grupo de zombies y que queremos iterar sobre ellos y renderizar su zombie partial
+</div>
+//agregamos
+<%= form_for(Zombie.new, remote: true) do |f|%> //ESO ES COMO HACEMOS UN FORMULARIO AJAX
+	<div class="field">
+		<%= f.label :name %><br/>
+		<%= f.text_field :name %>
+	</div>
+	<div class="actions">
+		<%= f.submit %>
+	</div>
+<%= end %>	
+QUEDARIA
+app/views/zombie/index.html.erb
+<div id="zombies">
+	<%= render @zombies %>
+</div>
+<%= form_for(Zombie.new, remote: true) do |f|%> //esto va a la accion create porque se esta creando un nuevo zombie
+	<div class="field">
+		<%= f.label :name %><br/>
+		<%= f.text_field :name %>
+	</div>
+	<div class="actions">
+		<%= f.submit %>
+	</div>
+<%= end %>	
+
+3.-Create the javascript
+app/views/create.js.erb
+$('div#zombies').append("<%= escape_javascript(render @zombie)%>");
+$('div#<%=dom_id(@zombie)%>').effect('highlight');
+SI OCURRIO UN ERROR Y NO GUARDO EL NUEVO OBJETO COLOCAREMOS
+<% if @zombie.new_record? %>
+	$('input#zombie_name').effect('highlight', {color: 'red'});
+<% else %>
+	$('div#zombies').append("<%= escape_javascript(render @zombie)%>");
+	$('div#<%=dom_id(@zombie)%>').effect('highlight');
+<% end %>
+Para agregar efectos como highlight debemos traer la libreria de JQUERY-UI
+Asi que la agregamos en /app/assets/javascript/application.js
+//= require jquery
+//= require jquery_ui
+//= require jquery_ujs
+//= require_tree .
+
+CREATE A AJAX FORM THAT CAN SET A CUSTOM DESCOMPOSITION PHASE ON THE ZOMBIE SHOW PAGE
+1.-CREATE NEW CUSTOM ROUTE FOR OUR ACTION
+	resource :zombies do
+		resource :tweets
+		get :decomp, on: :member
+		put :custom_decomp, on: :member
+	end
+2.-DEFINE THE FORM
+/views/zombies/show.html.erb
+<strong>Decomposition Phase:</strong>
+<span id="decomp"><%= @zombie.decomp %></span>
+
+<div id="custom_phase">
+	<%= form_for @zombie, url: custom_decomp_zombie_path(@zombie), remote: true fo |f| %>
+		<strong>Custom phase</strong>
+		<%= f.text_field :decomp %>
+		<%= f.submit "Set"%>
+	<% end %>
+</div>
+3.-CREATE THE ACTION IN THE CONTROLLER
+/app/controller/zombies_controller.rb
+def custom_decomp
+	@zombie = Zombie.find(params[:id])
+	@zombie.decomp = params[:zombie][:decomp]
+	@zombie.save
+	// don't need respond_to solo se responderá en javascript
+end
+4.-WRITE THE JAVASCRIPT TO SEND BACK TO THE CLIENT
+/app/views/zombies/advance_decomp.js.erb
+$('#decomp').text('<%= @zombie.decomp %>').effect('highlight',{},3000);
+<% if @zombie.decomp == "Dead (again)" %>
+	$('div#custom_phase').fadeOut();
+<% end %>
+
+
+DO CUSTOM DECOMPOSITION, USING JSON WITH AN API
+Solo nos comunicaremos con el servidor a través de JSON (es decir, respondera en formato JSON ) luego escribiremos algo en el lado del cliente a traves de javascript para comunicarnos con el servidor. ES como si estuviesemos creando un API en el servidor y escribimos JAVASCRIPT para comunicarnos con ese API
+1.- DEFINE THE FORM
+/views/zombies/show.html.erb
+<div id="custom_phase2">
+	<%= form_for @zombie, url: custom_decomp_zombie_path(@zombie)fo |f| %>
+		<strong>Custom phase via JSON</strong>
+		<%= f.text_field :decomp %>
+		<%= f.submit "Set"%>
+	<% end %>
+</div>
+2.-MODIFY THE custom_decomp action
+/app/controller/zombies_controller.rb
+def custom_decomp
+	@zombie = Zombie.find(params[:id])
+	@zombie.decomp = params[:zombie][:decomp]
+	@zombie.save
+	respond_to do |format|
+		format.js
+		format.json { render json: @zombie.to_json(only: :decomp)}
+
+	end
+end
+3.-Write the client side JavaScript using CoffeScript
+/app/assets/javascript/zombies.js.coffee
+$(document).ready ->
+	$('div#custom_phase2 form').submit (event) ->
+		event.preventDefault(); //eliminar como va a actuar este evento normalmente, elimina la peticion hacia el servidor
+		//AQUI ARMAMOS UNA NUEVA PETICION
+		url = $(this).attr('action')//tomamos el URL DEL FORMULARIO
+		custom_decomp = $('div#custom_phase2 #zombie_decomp').val() //zombie_decomp = zombie[:decomp] //TOMAMOS LOS VALOR QUE QUEREMOS ENVIAR
+
+		$.ajax //CREAMOS LA PETICION USANDO LOS VALORES ANTERIORES
+			type: 'put'
+			url: url
+			data: {zombie: {decomp: custom_decomp}}//la data que voy a pasar como si fuese un formulario
+			dataType: 'json' //como voy a recibir la información del AJAX (es decir, cual es el formato de la respuesta)
+			success: (json) -> //si la respuesta de la peticion es exitosa, que el valor de respuesta sea 200 y que la respuesta que te esta dando sea en el formato datatype JSON
+				$('#decomp').text(json.decomp).effect('highlight')
+				$('div#custom_phase2').fadeOut() if json.decomp== "Dead (again)"
+
+
+SE COLOCA EL PARAMETRO REMOTE EN EL FORMULARIO SOLO CUANDO TODOS LOS VALORES NECESARIOS PARA LA ACCION ESTAN DENTRO DEL FORMULARIO COMO CAMPOS EN CASO CONTRARIO SE DEBE CREAR LA PETICION AJAX MANUALMENTE AQUI TIENES QUE ARAMAR LA PETICION (URL, LOS CAMPOS Y ENVIARLA) PARA TOMAR VALORES QUE ESTEN FUERA DEL FORMULARIO O QUE SE HAGAN PROCEDURALMENTE.
