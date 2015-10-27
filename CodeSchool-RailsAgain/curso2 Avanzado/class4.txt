@@ -125,6 +125,8 @@ class WeaponMailer < ActionMailer::Base
 end
 
 Convert the following to their appropriate asset tags. 
+(app/views/layouts/application.html.erb)
+
 <img src="/assets/weapon.png" />
 <script src="/assets/weapon.js" />
 <link href="/assets/weapon.css" media="screen" rel="stylesheet" type="text/css" />
