@@ -94,7 +94,7 @@ CUSTOMIZE JSON RESPONSE
 @zombie.to_json(only: [:name, :age])	{"name": "Eric", "age": 25}
 @zombie.to_json(except: [:created_at, :updated_at, :id, :email, :bio]) 	{"age":25,"decomp":"fresh","name":"Eric, "rotting":false}
 INCLUIR LOS OBJETOS RELACIONADOS CON EL OBJETO QUE SE RETORNA
-@zombie.to_json(:include: :brain, except:[:created_at,updated_at,:id])
+@zombie.to_json(include: :brain, except:[:created_at,updated_at,:id])
 {
 	"age": 25,
 	"bio": "I am zombified",
@@ -345,3 +345,56 @@ $(document).ready ->
 
 
 SE COLOCA EL PARAMETRO REMOTE EN EL FORMULARIO SOLO CUANDO TODOS LOS VALORES NECESARIOS PARA LA ACCION ESTAN DENTRO DEL FORMULARIO COMO CAMPOS EN CASO CONTRARIO SE DEBE CREAR LA PETICION AJAX MANUALMENTE AQUI TIENES QUE ARAMAR LA PETICION (URL, LOS CAMPOS Y ENVIARLA) PARA TOMAR VALORES QUE ESTEN FUERA DEL FORMULARIO O QUE SE HAGAN PROCEDURALMENTE.
+
+EJERCICIOS
+
+Complete the method below so that if the ammo is low it will render the fire_and_reload view, otherwise it should render the fire_weapon view. 
+
+class WeaponsController < ApplicationController
+  def fire_weapon
+    @weapon = Weapon.find(params[:id]) 
+    @weapon.fire!
+
+    if @weapon.low_ammo?
+     render :fire_and_reload
+    end
+
+  end
+end
+
+Create two custom member routes on the weapons resource, so you have a put method called toggle_condition and a put method called reload. 
+RailsForZombies::Application.routes.draw do
+  resources :zombies do
+    resources :weapons do
+      put :toggle_condition, on: :member
+      put :reload, on: :member
+    end
+  end
+end
+
+Complete the create method below. When @weapon.save is successful it should render the @weapon object in JSON, have status :created, and set the location to the @weapon's show url. When @weapon.save fails it should return the @weapon.errors and have the status :unprocessable_entity. 
+
+class WeaponsController < ApplicationController
+  def reload
+    @weapon = Weapon.find(params[:id]) 
+
+    if @weapon.ammo < 30
+      @weapon.reload(params[:ammo_to_reload])
+      render json: @weapon.to_json(only: :ammo), status: :ok
+    else
+      render json: @weapon.to_json(only: :ammo), status: :unprocessable_entity
+    end
+  end
+end
+
+Modify the show action so that the JSON it renders includes the zombie record the @weapon belongs to. Also make it exclude the :id, :created_at, and :updated_at fields. 
+
+class WeaponsController < ApplicationController
+  def show
+    @weapon = Weapon.find(params[:id])
+    render json: @weapon.to_json(include: :zombie, except: [:id, :created_at, :updated_at])
+  end
+end
+
+
+Edit the as_json method so the Zombie class only returns the zombie's name and weapons (use include). Only return the weapon's name and ammo. 
