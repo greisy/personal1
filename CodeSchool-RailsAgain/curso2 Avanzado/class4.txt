@@ -156,3 +156,11 @@ h2#newUser {
   background: url(<%= asset_path('rails.png')%>) no-repeat;
   }
 }
+
+Use CoffeeScript so when the New Weapon link is pressed it makes the #newWeapon div visible and then hides the New Weapon link. Don't forget to call preventDefault(). 
+$(document).ready -> 
+  $('a#displayWeaponForm').click (event) ->
+    $('div#newWeapon').show()
+    $('a#displayWeaponForm').hide() 
+    event.preventDefault()
+  
