@@ -14,7 +14,7 @@ struct Nodo{
 	Nodo *siguienteColeado;
 };
 
-void agregarCola(Nodo *nuevo, Nodo **lista){
+void agregarCola(Nodo *nuevo, Nodo **lista){ // el * es un puntero, el & es una direccion de memoria
 	Nodo *actual = *lista;
 	
 	if(actual == NULL){
@@ -48,7 +48,7 @@ void agregarCola(Nodo *nuevo, Nodo **lista){
 	return;
 }
 
-bool verificoAmigosEnCola(int id, Nodo *lista){
+bool verificoAmigosEnCola(int id, Nodo *lista){//tener dos * aqui hace que necesitemos un & abajo
 	Nodo *actual = lista;
 	if(actual== NULL){
 		return false;
