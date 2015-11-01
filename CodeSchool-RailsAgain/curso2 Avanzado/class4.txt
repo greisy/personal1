@@ -161,4 +161,10 @@ $(document).ready ->
     $('div#newWeapon').show()
     $('a#displayWeaponForm').hide() 
     event.preventDefault()
-  
+
+Modify the application.js below adding the calendar.js and color_picker.js libraries after jquery_ujs. 
+//= require jquery
+//= require jquery_ujs 
+//= require calendar.js
+//= require color_picker.js
+//= require_tree .
