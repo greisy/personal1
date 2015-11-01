@@ -398,3 +398,96 @@ end
 
 
 Edit the as_json method so the Zombie class only returns the zombie's name and weapons (use include). Only return the weapon's name and ammo. 
+class Zombie < ActiveRecord::Base
+  has_many :weapons
+
+  def as_json(options=nil)
+    super(options || {only: :name, include: {weapons: {only: [:ammo, :name]}}})
+  end 
+end
+
+Modify the show.html.erb view below so that both the Toggle link and the Reload form use AJAX. All you need to do is add the option that makes them ajaxified. 
+
+<ul>
+  <li>
+    <em>Name:</em> <%= @weapon.name %>
+  </li> 
+  <li>
+    <em>Condition:</em>
+    <span id="condition"><%= @weapon.condition %></span>
+    <%= link_to "Toggle", toggle_condition_weapon_path(@weapon), remote: true %>
+  </li> 
+  <li>
+    <em>Ammo:</em>
+    <span id="ammo"><%= @weapon.ammo %></span>
+  </li>
+</ul>
+
+<%= form_for @weapon, url: reload_weapon_path(@weapon), remote: true do |f| %>
+  <div class="field">
+    Number of bullets to reload:
+    <%= number_field_tag :ammo_to_reload, 30 %> <br /> <%= f.submit "Reload" %>
+  </div>
+<% end %>
+
+Modify the toggle_condition action so that it responds to JavaScript, and complete the toggle_condition.js.erb using jQuery to update the condition span with the @weapon's changed condition and make it highlight. 
+weapons_controller.rb
+class WeaponsController < ApplicationController
+  def toggle_condition
+    @weapon = Weapon.find(params[:id]) 
+    @weapon.toggle_condition 
+
+    respond_to do |format|
+      format.html { redirect_to @weapon, notice: 'Changed condition' }
+      format.js
+    end
+  end
+end
+
+toggle_condition.js.erb
+
+$('span#condition').text('<%= @weapon.toggle_condition%>').effect('highlight',{},3000);
+
+Now write the controller and JavaScript code needed to properly reload the weapon using the ajaxified form. In the reload.js.erb use jQuery to update the #ammo text to the current @weapon.ammo value and if the ammo value is over or equal to 30, fadeOut the #reload_form div. 
+weapons_controller.rb
+class WeaponsController < ApplicationController
+  def reload
+    @weapon = Weapon.find(params[:id]) 
+
+    respond_to do |format|
+      if @weapon.ammo < 30
+        @weapon.reload(params[:ammo_to_reload])
+      
+        format.json { render json: @weapon.to_json(only: :ammo), status: :ok }
+        format.html { redirect_to @weapon, notice: 'Weapon ammo reloaded' }
+      else
+        format.json { render json: @weapon.to_json(only: :ammo), status: :unprocessable_entity }
+        format.html { redirect_to @weapon, notice: 'Weapon not reloaded' }
+      end
+      format.js
+    end
+  end
+end
+reload.js.erb
+$('span#ammo').text('<%= @weapon.ammo %>');
+<% if @weapon.ammo >= 30 %>
+  $('div#reload_form').fadeOut();
+<% end %>
+
+Instead of returning jQuery which gets executed on the client-side, lets write the ajax request in CoffeeScript communicating with JSON. It should do the same thing as the last challenge, updating & highlighting the ammo, and fading out the form (hint: fade out the wrapper element) if ammo is equal or above 30.
+Tip for your ajax form: data: {ammo_to_reload: ammo}. 
+weapons.js.coffee
+$(document).ready ->
+  $('div#reload_form form').submit (event) ->
+    event.preventDefault()
+    url = $(this).attr('action')
+    ammo = $('#ammo_to_reload').val()
+
+    $.ajax
+      type: 'put'
+      url: url
+      data: {ammo_to_reload: ammo}
+      dataType: 'json'
+      success: (json) ->
+        $('span#ammo').text(json.ammo).effect('highlight')
+        $('div#reload_form').fadeOut() if json.ammo >= 30
