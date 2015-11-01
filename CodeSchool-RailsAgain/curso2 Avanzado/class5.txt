@@ -398,10 +398,15 @@ end
 
 
 Edit the as_json method so the Zombie class only returns the zombie's name and weapons (use include). Only return the weapon's name and ammo. 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 2435fc7a4ee7519d877cb7f995dd6aed6e2bcc6b
 class Zombie < ActiveRecord::Base
   has_many :weapons
 
   def as_json(options=nil)
+<<<<<<< HEAD
     super(options || {only: :name, include: {weapons: {only: [:ammo, :name]}}})
   end 
 end
@@ -491,3 +496,8 @@ $(document).ready ->
       success: (json) ->
         $('span#ammo').text(json.ammo).effect('highlight')
         $('div#reload_form').fadeOut() if json.ammo >= 30
+=======
+    super (options || {only: :name, include: {weapons: {only: [:name, :ammo]}}})
+  end 
+end
+>>>>>>> 2435fc7a4ee7519d877cb7f995dd6aed6e2bcc6b
