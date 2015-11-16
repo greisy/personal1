@@ -1,0 +1,224 @@
+index.html
+<div class='favorite'>
+	<h3>Favorite</h3>
+	<img src=""/>
+	<p></p>
+	<button>Show Favorite</button>
+</div>
+application.js
+$('button').on('click', function(){
+	$.ajax('/cities/favorite/1',{
+		contentType: 'application/json',
+		dataType: 'json',
+		success: function(result){
+			var favorite = $('.favorite');
+			favorite.find('p').html(result.name);
+			favorite.find('img')
+					.attr('src', result.image);
+		}
+	});
+});
+result 
+{
+	image: "images/paris.png",
+	name: "Paris, France"
+}
+
+Utility method: $.each(collection, function(<index>, <object>){})
+result
+[
+{
+	image: "images/paris.png",
+	name: "Bogota, Colombia"
+},
+{
+	image: "images/paris.png",
+	name: "Madrid, Spain"
+},
+{
+	image: "images/paris.png",
+	name: "Caracas, Venezuela"
+}
+]
+We're going to use $.each() to iterate through the array, so when we'll make the ajax call how result now we need to show instance of one element, we need to show multiple elements, so we need to change the success function
+success: function(result){
+	$.each(result, function(index, city){// city is the current element of the array
+		var favorite = $('.favorite-'+ index);
+			favorite.find('p').html(city.name);
+			favorite.find('img')
+					.attr('src', city.image);
+		}			
+	);
+
+Transforming an array of objects into html
+[
+{
+	name: 'JFK - New York, NY',
+	status: 'Departing Location'	
+},
+{
+	name: 'DEN - Denver, CO',
+	status: 'Connection flight'	
+},
+{
+	name: 'SFO - San Francisco, CA',
+	status: 'Destination'	
+},
+]
+In this example we have a button and when it's clicked we need to make an ajax call to bring all the current flights.
+$('.update-status').on('click', function(){
+	$.ajax('/status',{
+		contentType: 'application/json',
+		dataType: 'json',
+		success: function(result){...}
+	});
+});
+We can make the ajax call through $.getJSON(url,success);
+$.getJSON('/status', function(result){});
+$('.update-status').on('click', function(){
+	$.getJSON('/status', function(result){
+		var statusElements = ???
+		$('.status-list').html(statusElement);
+	});
+});
+We need a good way to create an array of list item HTML elements from the result of the ajax call that looks like this
+<li>	
+	<h3>name</h3>
+	<p>status</p>
+</li>
+<li>...</li>
+<li>...</li>
+So we're going to use $.map
+$.map(collection, function(<item>,<index>){
+	
+});
+$.map() works in this way:
+var myNumbers =[1,2,3,4]
+var newNumbers = $.map(myNumbers, function(item,index){ return item +1});
+So map go through each element of the original array and it'll change each element applying some function, and keep the original array intact but it'll generate a second array with the result of apply the function of each element.
+[
+{
+	name: 'JFK - New York, NY',
+	status: 'Departing Location'	
+},
+{
+	name: 'DEN - Denver, CO',
+	status: 'Connection flight'	
+},
+{
+	name: 'SFO - San Francisco, CA',
+	status: 'Destination'	
+},
+]
+$.map(result, function(status, index){
+	var listItem= $('<li></li>');
+	$('<h3>'+status.name+'</h3>').appendTo(listItem);
+	$('<p>'+status.status+'</h3>').appendTo(listIem);
+	return listItem;
+});
+//the result will be
+[<li></li>,<li></li>,<li></li>]
+
+Transforming JSON to HTML
+$('.update-flight-status').on('click', function(){
+	$.getJSON('/status', function(result){
+		var statusElements = $.map(result, function(status, index){
+			var listItem= $('<li></li>');
+			$('<h3>'+status.name+'</h3>').appendTo(listItem);
+			$('<p>'+status.status+'</h3>').appendTo(listIem);..
+			return listItem;
+		});
+		$('.status-list').html(statusElements);
+
+	});
+});	
+In the line 131 we are updating the HTML with statusElements, we're going to give the DOM a break, optimaze by using the detach() function. detach() removes an element from the DOM, do things to it and then appending back to the DOM. This is useful to minimize DOM insertions with multiple html elements. So the line 131 it looks like:
+$('.status-list').detach() //detach
+						.html(statusElements). //update
+											appendTo('.status'); //attach
+
+
+
+
+$.each VS. $.map
+$.each runs the function for each item in the array, but returns the original array unchanged.
+var cities = ['Paris', 'London', 'Orlando'];
+$.each(cities, function(index, city){
+	var result = city + " " + index;
+	console.log(result);
+});
+["Paris", "London", "Orlando"]
+$.map runs the function for each item in the array and creates a new array from the returned results.
+$.map(cities, function(city, index){
+	var result = city+ " "+ index;
+	console.log(result);
+	return result;
+});
+["Paris 0", "London 1", "Orlando 2"]
+
+
+EJERCICIOS
+Our site has a popup deals page. We need to write the javascript that will load the current available deals. Let's start out by looping over the result with the $.each() function. Within this loop, console.log() each item for now to get an idea of what the data looks like.
+
+$('button').on('click', function() {
+  $.ajax('/cities/deals', {
+    success: function(result) {
+      $.each(result, function(index, dealItem) {
+        // Your code goes here
+        var deals = $('div.deal-'+index);
+        deals.find('.name').html(dealItem.name);
+        deals.find('.price').html(dealItem.price);
+      });
+    }
+  });
+});
+
+Lets clean up our code a bit. This AJAX call is pretty simple, and it only has a success callback, so lets use the $.getJSON() function to make the call instead.
+
+$('button').on('click', function() {
+  $.getJSON('/cities/deals', function(result) {
+      $.each(result, function(index, dealItem) {
+        var dealElement = $('.deal-' + index);
+        dealElement.find('.name').html(dealItem.name);
+        dealElement.find('.price').html(dealItem.price);
+      });
+    });
+});
+
+Someone thought it would be a great idea to have a page which shows flights that are running late. You're going to need to use the $.map() function, lets first console.log() the data being passed to the $.map() callback to see what we're dealing with.
+
+$('.update-available-flights').on('click', function() {
+  $.getJSON('/flights/late', function(result) {
+    // Your code goes here
+    $.map(result, function(element, index){
+    	console.log(element);
+    });
+  });
+});
+
+Now you need to create the array of html elements. Create an array of li elements, each with the flightNumber and the time from the ajax result. Insert the resulting array into the .flight-times unordered list element.
+
+$('.update-available-flights').on('click', function() {
+  $.getJSON('/flights/late', function(result) {
+    var flightElements = $.map(result, function(flightItem, index){
+      // Your code goes here
+      var listItem = $('<li></li>');
+    	$('<h3>'+flightItem.flightNumber+'</h3>').appendTo(listItem);
+      $('<h3>'+flightItem.time+'</h3>').appendTo(listItem);
+      return listItem;
+    });
+    $('.flight-times').html(flightElements);
+  });
+});
+
+Let's take a minute to make our previous code a bit more efficient. Use the .detach() method to remove the .flight-times list element from the DOM before you insert the new list items. Then, re-insert the .flight-times element back into the .flights element.
+
+$('.update-available-flights').on('click', function() {
+  $.getJSON('/flights/late', function(result) {
+    var flightElements = $.map(result, function(flightItem, index){
+      var flightEl = $('<li>'+flightItem.flightNumber+'-'+flightItem.time+'</li>');
+      return flightEl;
+    });
+    $('.flight-times').detach().html(flightElements).appendTo('.flights');
+  });
+});

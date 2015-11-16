@@ -1,0 +1,138 @@
+Managing Events
+
+function picture(){
+	console.log('Show plane');	
+};
+function status(){
+	console.log('In service');
+}
+
+$(document).ready(function(){
+	$('button').on('click', picture);
+	$('button').on('click', status);	
+});
+When the button is clicked will run the corresponding function
+
+What if we want turn off these click event handlers, so when we click the button the event handler don't happen anymore, we can use the off method
+off(<event name>)
+	$('button').off('click'); It'll turn off the two both functions (picture and status)
+
+When we can turn off only one of this two events, we need to use event namespace o labels to identify the event
+$(document).ready(function(){
+	$('button').on('click.image', picture);
+	$('button').on('click.details', status);	
+});
+	$('button').off('click.image'); 
+If we want to remove all types of event handlers that end in .image
+	$('button').off('.image');
+
+Triggering events
+trigger(<event name>); // will trigger the given event on the target
+this allows us trigger an event using javascript rather than interacting with the web page, and perhaps click on the button, only we need to put on our code
+	$('button').trigger('click');
+	$('button').trigger('.details');
+
+Example
+.html
+<li class="vacation" data-price="399">
+	<h3>Hawaiian Vacation</h3>
+	<button>Show Price</button>
+</li>
+<li class="vacation" data-price="749">
+	<h3>European Vacation</h3>
+	<button>Show Price</button>
+</li>
+<a href="#" class='show-prices'>Show all Prices</a>
+
+.js
+
+var showPrice = function(){
+	var vacation = $(this).closest('.vacation'); //this in this case is the button we just clicked it
+	var price = vacation.data('price');
+	var details = $('<p>Book 3 days for $'+(3*price)+'</p>');
+	vacation.append(details);	
+};
+$('.vacation').on('click.price', 'button', showPrice);//this is gonna trig the showPrice function when someone does click.
+$('.vacation').on('show.price', showPrice);
+$('.show-prices').on('click', function(event){
+	event.preventDefault();
+	$('.vacation').trigger('show.price');
+});
+
+
+EJERCICIOS
+We're prototyping a page right now that will fetch some content from around the web and display it so that our travelers can find out about the weather and see more pictures for destinations they are interested in. In chapter 6 we'll make this content dynamic, but for now we'll hardcode it.
+
+The problem is the button can be clicked any number of times and it'll always append the weather. Update this to instead remove the event handler when it's clicked. Note: You can access the clicked button using $(this).
+
+$(document).ready(function(){
+  // Get Weather
+  $('button').on('click', function() {
+    var results = $(this).closest('li').find('.results');
+    results.append('<p>Weather: 74&deg;</p>');
+    $(this).off('click');
+  });
+});
+
+Turns out another coworker added some functionality to this same button to show photos. We want to keep both button event handlers working separate from each other, but right now our weather handler will remove the event handler for photos when clicked!
+
+Namespace the weather event handler to the weather namespace and update how it is removed to prevent this.
+
+$(document).ready(function(){
+  // Get Weather
+  $('button').on('click.weather', function() {
+    var results = $(this).closest('li').find('.results');
+    results.append('<p>Weather: 74&deg;</p>');
+    $(this).off('click.weather');
+  });
+  
+   // Show Photos
+  $('button').on('click.photos', function() {
+    var tour = $(this).closest('li');
+    var results = tour.find('.results');
+    results.append('<p><img src="/assets/photos/'+tour.data('loc')+'.jpg" /></p>');
+    $(this).off('click.photos');
+  });
+});
+
+When testing out our code, we keep having to refresh the page and click on the button. Let's make things a little easier by triggering a click on the button when the page loads.
+
+$(document).ready(function(){
+  // Get Weather
+  $('button').on('click.weather', function() {
+    var results = $(this).closest('li').find('.results');
+    results.append('<p>Weather: 74&deg;</p>');
+    $(this).off('click.weather');
+  });
+
+   // Show Photos
+  $('button').on('click.photos', function() {
+    var tour = $(this).closest('li');
+    var results = tour.find('.results');
+    results.append('<p><img src="/assets/photos/'+tour.data('loc')+'.jpg" /></p>');
+    $(this).off('click.photos');
+  });
+  $('button').trigger('click');
+});
+
+What if we wanted to run these in a specific order? By default jQuery will run them in the order they are declared, but we could also control the order by triggering one event from the other.
+
+Change the click.weather event to a new custom event, no longer listening for click. Trigger this event from within the click.photos event handler.
+
+$(document).ready(function(){
+  // Get Weather
+  $('button').on('show.weather', function() {
+    var results = $(this).closest('li').find('.results');
+    results.append('<p>Weather: 74&deg;</p>');
+    $(this).off('click.weather');
+  });
+  
+  // Show Photos
+  $('button').on('click.photos', function() {
+    var tour = $(this).closest('li');
+    var results = tour.find('.results');
+    results.append('<p><img src="/assets/photos/'+tour.data('loc')+'.jpg" /></p>');
+    $(this).off('click.photos');
+    $('button').trigger('show.weather');
+  });
+});

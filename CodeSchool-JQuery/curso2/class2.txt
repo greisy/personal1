@@ -1,0 +1,128 @@
+REFACTORING TO OBJECTS
+application.js
+var confirmation = {
+	init: function(){
+		// put our existing event handlers, within init, we can run all the code that was in our document ready function
+	$('.confirmation').on('click','button', function(){
+		$.ajax('confirmation.html',{
+			success: function(response){ 
+				$('.ticket').html(response).slideDown(); 
+			},
+			error: function(request, errorType, errorMessage){ 
+				alert("Error:"+errorType+" with message:"+ errorMessage);	
+			},
+			timeout: 3000,
+			beforeSend: function(){
+				$('.confirmation').addClass('is-loading'); //runs before the ajax request
+			},
+			complete: function(){
+				$('.confirmation').removeClass('is-loading'); //runs after both success and error
+			} 
+			);
+		});
+	});
+	$('.confirmation').on('click','.view-boarding-pass', function(event){
+		event.preventDefault();
+		$('.view-boarding-pass').hide();
+		$('.boarding-pass').show();
+	});
+	}
+}
+
+$(document).ready(function(){
+	confirmation.init();	
+});
+
+SEPARATING FUNCTIONS
+var confirmation = {
+	init: function(){
+		$('.confirmation').on('click','button', this.loadConfirmation); //need to use 'this' to reference other keys of this object
+		$('.confirmation').on('click','.view-boarding-pass', this.showBoardingPass);
+	},
+	loadConfirmation: function(){
+		$.ajax('confirmation.html',{
+			success: function(response){ 
+				$('.ticket').html(response).slideDown(); 
+			},
+			error: function(request, errorType, errorMessage){ 
+				alert("Error:"+errorType+" with message:"+ errorMessage);	
+			},
+			timeout: 3000,
+			beforeSend: function(){
+				$('.confirmation').addClass('is-loading'); //runs before the ajax request
+			},
+			complete: function(){
+				$('.confirmation').removeClass('is-loading'); //runs after both success and error
+			} 
+			});
+	},
+	showBoardingPass: function(event){
+			event.preventDefault();
+			$('.view-boarding-pass').hide();
+			$('.boarding-pass').show();
+		});
+
+	};
+}
+
+-----
+EJERCICIOS
+The level1.js tab shows our code as it stood at the end of level 1, but isn't being loaded into the page. We have some pretty deep nesting of functions, and that makes our code a little tough to read. Let's start refactoring it into a JavaScript object. For starters, create a new function named init within our tour object.
+
+Next, call the init method on the tour object from within the $(document).ready function. Lastly, move the existing code that's run on $(document).ready within level1.js into our new init method. This should be functionally the same, but now our code is moved into the tour object.
+
+var tour = {
+  init: function(){
+  	$("#tour").on("click", "button", function() {
+    $.ajax('/photos.html', {
+      data: {location: $("#tour").data('location')},
+      success: function(response) {
+        $('.photos').html(response).fadeIn();
+      },
+      error: function() {
+        $('.photos').html('<li>There was a problem fetching the latest photos. Please try again.</li>');
+      },
+      timeout: 3000,
+      beforeSend: function() {
+        $('#tour').addClass('is-fetching');
+      },
+      complete: function() {
+        $('#tour').removeClass('is-fetching');
+      }
+    });
+  });
+  }
+};
+$(document).ready(function() {
+  tour.init();
+});
+
+Well, we moved our big block of code around, but it's still tough to read. Let's move our $.ajax call from within this event handler callback to a new fetchPhotos key on the tour object. Also, update the call to on click to use this new fetchPhotos function.
+
+var tour = {
+  init: function() {
+    $("#tour").on("click", "button", this.fetchPhotos);
+  },
+  fetchPhotos : function() { 
+      $.ajax('/photos.html', {
+        data: {location: $("#tour").data('location')},
+        success: function(response) {
+          $('.photos').html(response).fadeIn();
+        },
+        error: function() {
+          $('.photos').html('<li>There was a problem fetching the latest photos. Please try again.</li>');
+        },
+        timeout: 3000,
+        beforeSend: function() {
+          $('#tour').addClass('is-fetching');
+        },
+        complete: function() {
+          $('#tour').removeClass('is-fetching');
+        }
+      });
+    }
+  
+};
+$(document).ready(function() { 
+  tour.init();
+});

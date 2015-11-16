@@ -1,0 +1,79 @@
+AJAX WITH JSON
+Until now we have only recieved HTML response but we can recieve JSON data. So we need to specify in the object on the AJAX request the type of data we are going to recieve, for example:
+
+$('form').on('submit', function(event){
+	event.preventDefault();
+	var form = $(this);
+	$.ajax($('form').attr('action'),{
+		type: 'POST',
+		data: form.serialize(),
+		dataType: 'json', 	//parse the response as JSON
+		success: function(result){// resultado en HTML
+			form.remove();
+			var msg= $('<p></p>');
+			msg.append("Destination:"+ result.location+".");
+			msg.append("Price:"+ result.totalPrice+".");
+			msg.append("Nights:"+ result.nights+".");
+			msg.append("Confirmation:"+ result.confirmation+".");
+
+			$('vacation').hide().html(msg).fadeIn();
+					},
+		contentType: 'application/json'	//ask the server to respond with JSON
+	})	
+});
+
+result from the server //JSON IS CONVERED INTO JAVASCRIPT OBJECT
+{
+	location: 'Paris',
+	totalPrice: 1196.0
+	nights: 4,
+	confirmation: '345Feab' 
+
+}
+
+EJERCICIOS
+Our form is working now! We're able to submit and see a response message from the server. We'd like to tweak this message a little bit, but since we're getting HTML back from the server, it wouldn't be easy. Luckily, we know that our server can also respond with a JSON version of this same response.
+
+Update our existing $.ajax call to make the request setting the dataType to json, and update the success callback to set the HTML of the .tour element to a message of your choice that uses the description, price, number of nights and confirmation number.
+
+$(document).ready(function() {
+  $('form').on('submit', function(event) {
+    event.preventDefault();
+    $.ajax('/book', {
+      type: 'POST',
+      data: $('form').serialize(),
+      dataType: 'json',
+      success: function(response) {
+        var msg = $('<p></p>');
+        msg.append("Description:"+ response.description);
+        msg.append("Price:"+ response.price);
+        msg.append("Nights:"+ response.nights);
+        msg.append("Confirmation:"+ response.confirmation);
+        $('.tour').html(msg);
+      	
+      },
+           contentType: 'application/json'
+    });
+  });
+});
+
+Right now we're hardcoding the URL of the form action in two places - in the HTML of the form, and in our $.ajax call. Let's update our $.ajax call to use whatever URL the form specifies. Also, update the type of the ajax request to use the method attribute of the form.
+
+$(document).ready(function() {
+  $('form').on('submit', function(event) {
+    event.preventDefault();
+    $.ajax($('form').attr('action'), {
+      type: $('form').attr('method'),
+      data: $('form').serialize(),
+      dataType: 'json',
+      success: function(response) {
+        $('.tour').html('<p></p>')
+                  .find('p')
+                  .append('Trip to ' + response.description)
+                  .append(' at $' + response.price)
+                  .append(' for ' + response.nights + ' nights')
+                  .append('. Confirmation: ' + response.confirmation);
+      }
+    });
+  });
+});

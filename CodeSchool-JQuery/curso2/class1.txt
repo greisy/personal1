@@ -1,0 +1,106 @@
+index.html
+<li class="confirmation">
+	<h3>Hawaiian Vacation</h3>
+	<button>Flight details</button>
+	<div class="ticket">
+		<a class="view-boarding-pass">View Boarding Pass</a>
+		<img src="/ticket-14836.png">
+	</div>
+</li>
+application.js
+$('.confirmation').on('click','button', function(){ //cuando button es clickeado se muestra el elemento escondido 
+	$(this).find('.ticket').slideDown();
+});
+$('.confirmation .view-boarding-pass').on('click', function(){
+	$(this).closest('.ticket').find('img').show();	
+});
+
+//AJAX CALL
+$('.confirmation').on('click','button', function(){
+	$.ajax('http://example.org/confirmation.html',{
+		success: function(response){ //corre solo cuando el servidor retorna una respuesta exitosa
+			$('.ticket').html(response).slideDown(); //cargamos en ticket la respuesta en HTML y despues la mostramos con slideDown
+		}
+	});
+
+La respuesta que recibe se vera algo como lo siguiente que no es una página completa
+<div class="ticket">
+		<a class="view-boarding-pass">View Boarding Pass</a>
+		<img src="/ticket-14836.png">
+	</div>
+
+
+Para reducir el URL, quitamos el dominio, esto es porque la llamada AJAX usa el mismo dominio que el browser que lo ha cargado.
+
+otra manera de hacer la llamada es con el metodo $.get(url,sucsess) el success es que hacer cuando retorna una respuesta exitosa
+$.get('confirmation.html',function(response){
+	$('.ticket').html(response).slideDown();
+});
+
+SENDING PARAMETERS WITH REQUESTS
+$.ajax('confirmation.html?confNum=1234',{
+		success: function(response){ 
+			$('.ticket').html(response).slideDown(); 
+		}
+	});
+lo mismo que
+$.ajax('confirmation.html',{
+		success: function(response){ 
+			$('.ticket').html(response).slideDown(); 
+		},
+		data: {"confNum":1234} //objeto javascript
+	});
+
+A menudo la data en el request puede ser traida del HTML por ejemplo
+<div class="ticket" data-confNum="1234">
+$.ajax('confirmation.html',{
+		success: function(response){ 
+			$('.ticket').html(response).slideDown(); 
+		},
+		data: {"confNum":$(".ticket").data("confNum")} //objeto javascript
+	});
+
+EJERCICIOS:
+In the Try jQuery course, we learned how to slideDown() content based on a mouse click event. But that was for content that was already loaded in the HTML. Now, let's refactor that code to fetch and show the content using Ajax.
+
+To get started, make an $.ajax request for the /photos.html URL inside the existing event handler. Don't worry about handling the success or error cases yet.
+
+$(document).ready(function() {
+  $('#tour').on('click', 'button', function() {
+    $.ajax("/photos.html");
+  });
+});
+
+Now that we're making an Ajax request to the server, we need to do something with the response. Add a success callback handler to the $.ajax call that will take the .photos element and insert the contents of the response into the html() method. Then call fadeIn() on it so that it will appear on the screen
+$(document).ready(function() { 
+  $('#tour').on('click', 'button', function() { 
+    $.ajax('/photos.html', {
+      success: function(response){
+        $('.photos').html(response).fadeIn();
+           
+    	}
+  	});
+  });
+});
+
+There's an easier way to write this code using the jQuery $.get shorthand method. Refactor this code to use $.get instead of $.ajax.
+$(document).ready(function() {
+  $('#tour').on('click', 'button', function() {
+    $.get('/photos.html', function(response) {
+        $('.photos').html(response).fadeIn();
+    });
+  });
+});
+
+You've decided you only want to get photos of london. Use the data option of the $.ajax function to pass a location option. Get the location from the data-location on the #tour element using the data method.
+$(document).ready(function() {
+  $("#tour").on("click", "button", function() {
+    $.ajax('/photos.html', {
+      success: function(response) {
+        $('.photos').html(response).fadeIn();
+      },
+      data: {"location":$("#tour").data("location")}
+    });
+  });
+});
+

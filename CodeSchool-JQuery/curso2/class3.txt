@@ -1,0 +1,91 @@
+AJAX WITH FORMS
+$('form').on('submit', function(event){
+	event.preventDefault();//prevent the behavor of the form, which is submit and refresh the entire page
+	$.ajax('/book',{
+		type: 'POST'
+	})	
+});
+This would do the ajax request, but it's not sending any form data over. In the form with have the identify of each field so we need to attach those to the ajax request, in order to send not only the request just also the field with information.
+html
+<form action="/book">
+	<select id="destination" name="destination">
+
+	</select>
+	<input type="text" id="quantity" name="quantity" value="1">
+</form>
+
+js
+$('form').on('submit', function(event){
+	event.preventDefault();//prevent the behavor of the form, which is submit and refresh the entire page
+	$.ajax('/book',{
+		type: 'POST',
+		data: {
+			"destionation": $('#destionation').val(),
+			"quantity": $('#quantity').val()
+		}
+	})	
+});
+The method serialize is used to merge all form fields for submission, this method pull all the data out of the form and send it along with the ajax request
+$('form').on('submit', function(event){
+	event.preventDefault();//prevent the behavor of the form, which is submit and refresh the entire page
+	$.ajax('/book',{
+		type: 'POST',
+		data: $('form').serialize(),
+		success: function(result){// resultado en HTML
+			$('form').remove();
+			$('vacation').hide().html(result).fadeIn();
+		}
+	})	
+});
+To reduce DOM queries we can save a reference to the form, remember that we can't put this.remove because when we make the AJAX request the element this is changed
+$('form').on('submit', function(event){
+	event.preventDefault();//prevent the behavor of the form, which is submit and refresh the entire page
+	var form = $(this);//$(this) is $('form')
+	$.ajax('/book',{
+		type: 'POST',
+		data: form.serialize(),
+		success: function(result){// resultado en HTML
+			form.remove();
+			$('vacation').hide().html(result).fadeIn();
+		}
+	})	
+});
+
+Here's a form we used in Try jQuery. As you change the number of nights, we show the updated estimate of the trip cost.
+
+What we didn't do was add a way to submit the form! Let's go ahead and add a listener for submit on the form which will run a function. This function should accept one parameter - the form submission event. Call preventDefault on this event to stop the browser from following the form submission. We'll write the ajax call in this event handler later.
+
+$(document).ready(function() {
+  $('form').on('submit', function(event){
+    event.preventDefault();
+  });
+});
+
+We're all set to start handling this form submission using Ajax. within the event handler, we'll need to do a few things. Make an ajax request to the /book URL on the server of type POST. Also pass in the contents of the form as the form data using serialize.
+
+$(document).ready(function() {
+  $('form').on('submit', function(event) {
+    event.preventDefault();
+    $.ajax('/book', {
+      type: 'POST',
+      data: $('form').serialize()
+    })
+  });
+});
+
+We check our server and we can see that the form is submitting successfully right now. Unfortunately, we're not showing the traveler anything yet!
+
+Add a callback for success that will handle this case. Set the html of the .tour element as the result from the ajax request.
+
+$(document).ready(function() {
+  $('form').on('submit', function(event) {
+    event.preventDefault();
+    $.ajax('/book', {
+      type: 'POST',
+      data: $('form').serialize(),
+      success: function(result){
+      	$('.tour').html(result);
+      }
+    });
+  });
+});

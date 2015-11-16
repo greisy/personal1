@@ -1,0 +1,172 @@
+Handling failed AJAX requests
+application.js
+$('.confirmation').on('click','button', function(){
+	$.ajax('confirmation.html',{
+		success: function(response){ 
+			$('.ticket').html(response).slideDown(); 
+		},
+		error: function(request, errorType, errorMessage){ // runs this callback if there is a timeout, abort, or server error
+			alert("Error:"+errorType+" with message:"+ errorMessage);	
+		});
+	});
+
+El error de timeout hace que se dispare la funcion de error, sin embargo, la espera para que se dispare este error dependerá del browser ya que cada browser es diferente y los tiempos de espera por lo tanto tambien lo son
+$('.confirmation').on('click','button', function(){
+	$.ajax('confirmation.html',{
+		success: function(response){ 
+			$('.ticket').html(response).slideDown(); 
+		},
+		error: function(request, errorType, errorMessage){ 
+			alert("Error:"+errorType+" with message:"+ errorMessage);	
+		},
+		timeout: 3000 //In ms, 1 second = 1000ms
+		);
+	});
+
+beforeSend and complete callbacks
+$('.confirmation').on('click','button', function(){
+	$.ajax('confirmation.html',{
+		success: function(response){ 
+			$('.ticket').html(response).slideDown(); 
+		},
+		error: function(request, errorType, errorMessage){ 
+			alert("Error:"+errorType+" with message:"+ errorMessage);	
+		},
+		timeout: 3000,
+		beforeSend: function(){
+			$('.confirmation').addClass('is-loading'); //runs before the ajax request
+		},
+		complete: function(){
+			$('.confirmation').removeClass('is-loading'); //runs after both success and error
+		} 
+		);
+	});
+
+Cuando hacemos una petición AJAX y el web server nos devuelve una AJAX response, si queremos manejar con javascript algun valor que esta cargado en la respuesta debemos siempre escuchar por el cambio en algun elemento del DOM no solamente luego de que la pagina ha sido cargada, dado que iría contra el AJAX dado que siempre cargará asincronamente luego de que la pagina haya sido cargada es por esto que el siguiente comando no servirá
+$('.confirmation .view-boarding-pass').on('click', function(){...});
+se debe modificar por
+$('.confirmation').on('click','.view-boarding-pass', function(){...});//listen for click events inside .confirmation
+	When they happen, check if the target was .view-boarding-pass
+
+$(document).ready(function(){
+	$('.confirmation').on('click','button', function(){
+	$.ajax('confirmation.html',{
+		success: function(response){ 
+			$('.ticket').html(response).slideDown(); 
+		},
+		error: function(request, errorType, errorMessage){ 
+			alert("Error:"+errorType+" with message:"+ errorMessage);	
+		},
+		timeout: 3000,
+		beforeSend: function(){
+			$('.confirmation').addClass('is-loading'); //runs before the ajax request
+		},
+		complete: function(){
+			$('.confirmation').removeClass('is-loading'); //runs after both success and error
+		} 
+		);
+	});
+	$('.confirmation').on('click','.view-boarding-pass', function(event){
+		event.preventDefault();
+		$('.view-boarding-pass').hide();
+		$('.boarding-pass').show();
+	});
+})
+
+
+
+
+
+EJERCICIOS
+Sometimes things go wrong. Maybe our server went down, or the traveler visiting our page lost their internet connection and can no longer access our site.
+
+Let's account for this case by adding an error callback that will set the contents of the .photos element to a message in an li element letting the traveler know that something went wrong and to try again. You can write whatever you'd like for this message.
+
+$(document).ready(function() {
+  var el = $("#tour");
+  el.on("click", "button", function() {
+    $.ajax('/photos.html', {
+      data: {location: el.data('location')},
+      success: function(response) {
+        $('.photos').html(response).fadeIn();
+      }, 
+      error : function(request, errorType, errorMessage){
+      	$('.photos').append("<li>Ocurrio un error</li>");
+      }
+    });
+  });
+});
+
+We've been hearing reports from our travelers that sometimes they'll click on this button and nothing will happen - then a minute later they'll get a message saying There was a problem fetching the latest photos. Please try again.
+
+Update the $.ajax request to timeout in 3 seconds to prevent this.
+$(document).ready(function() {
+  var el = $("#tour");
+  el.on("click", "button", function() {
+    $.ajax('/photos.html', {
+      data: {location: el.data('location')},
+      success: function(response) {
+        $('.photos').html(response).fadeIn();
+      },
+      error: function() {
+        $('.photos').html('<li>There was a problem fetching the latest photos. Please try again.</li>');
+      },
+      timeout: 3000
+    });
+  });
+});
+
+Things are working fine, but we could make it better. While the server is responding, the traveler has no indication that anything is happening.
+
+Our designers have added some special styling to account for this. Before the ajax command is sent, add a class of is-fetching to our #tour element, then remove this class after the request is complete.
+
+$(document).ready(function() {
+  $("#tour").on("click", "button", function() {
+    $.ajax('/photos.html', {
+      success: function(response) {
+        $('.photos').html(response).fadeIn();
+      },
+      error: function() {
+        $('.photos').html('<li>There was a problem fetching the latest photos. Please try again.</li>');
+      },
+      timeout: 3000,
+      beforeSend: function(){
+      	$('#tour').addClass('is-fetching');
+      },
+      complete: function(){
+        $('#tour').removeClass('is-fetching');}
+    });
+  });
+});
+
+One other thing we did in Try jQuery was make the labels show up over the photos when we moused over them. For some reason these are no longer working.
+
+It looks like we're trying to define our mouseover events when the DOM loads, but since we're loading them with Ajax it's not finding them. Update these to use event delegation, ensuring they'll work if we load them via Ajax.
+$(document).ready(function() {
+  function showPhotos() {
+    $(this).find('span').slideToggle();
+  }
+  $('.photos').on('mouseenter','li', showPhotos)
+                 .on('mouseleave','li', showPhotos);
+
+
+  var el = $("#tour");
+  el.on("click", "button", function() {
+    $.ajax('/photos.html', {
+      data: {location: el.data('location')},
+      success: function(response) {
+        $('.photos').html(response).fadeIn();
+      },
+      error: function() {
+        $('.photos').html('<li>There was a problem fetching the latest photos. Please try again.</li>');
+      },
+      timeout: 3000,
+      beforeSend: function() {
+        $('#tour').addClass('is-fetching');
+      },
+      complete: function() {
+        $('#tour').removeClass('is-fetching');
+      }
+    });
+  });
+});
